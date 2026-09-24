@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<!-- Zoxiro Pipeline Board — WHITE-LABEL TEMPLATE v1.2.6.
+     Generate PER USER as a persisted artifact. Substitute:
+       {{COMPANY_NAME}}    -> profile company_name
+       {{CRM_SEARCH_TOOL}} -> user's CRM deal-search tool id ("" = no CRM; shows connect prompt)
+       {{STAGES_JSON}}     -> JSON array of the user's chosen stage names IN ORDER,
+                              e.g. ["New","Contacted","Analyzing","Offer Out","Under Contract","Closed"]
+                              These must match the stage values in their CRM. Ask the user
+                              once which stages/preset they want; default to the schema stages.
+     Cards show score / source / next action when those properties exist in the CRM
+     (per references/deal-record-schema.md). Deals in stages not listed fall into "Other".
+     STALE IDS: if the CRM card errors after previously working, regenerate this artifact. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Zoxiro Deal Pipeline</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect width='100' height='100' fill='white'/%3E%3Cpath d='M32 30 L68 68 M68 30 L32 68' stroke='black' stroke-width='9.5' stroke-linecap='square'/%3E%3C/mask%3E%3CclipPath id='l'%3E%3Crect width='50' height='100'/%3E%3C/clipPath%3E%3CclipPath id='r'%3E%3Crect x='50' width='50' height='100'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg mask='url(%23m)'%3E%3Cpath d='M50 8 L86 20 C86 52 74 76 50 92 C26 76 14 52 14 20 Z' fill='%230F2038' clip-path='url(%23l)'/%3E%3Cpath d='M50 8 L86 20 C86 52 74 76 50 92 C26 76 14 52 14 20 Z' fill='%231559D0' clip-path='url(%23r)'/%3E%3C/g%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{color-scheme:light;--navy:#16294d;--navy2:#22406e;--blue:#2E5496;--ink:#151b26;--mut:#6b7686;--faint:#9aa4b2;--line:#e9edf4;--card:#ffffff;--col:#f4f6fb;--green:#137a4b;--greenbg:#e7f6ee;--amberbg:#fbf1da;--amber:#8a5a00;--red:#c0392b;--redbg:#fcece9;}
+*{box-sizing:border-box;}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:transparent;-webkit-font-smoothing:antialiased;}
+.wrap{padding:18px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.hero,.kpis,.col{animation:fadeUp .45s ease both;}
+.board .col:nth-child(2){animation-delay:.06s;}.board .col:nth-child(3){animation-delay:.12s;}.board .col:nth-child(4){animation-delay:.18s;}.board .col:nth-child(5){animation-delay:.24s;}.board .col:nth-child(6){animation-delay:.3s;}
+.hero{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-radius:16px;padding:16px 20px;margin-bottom:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 8px 22px rgba(22,41,77,.16);}
+.hero .logo{width:26px;height:26px;border-radius:7px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;overflow:hidden;}
+.hero .logo svg{width:100%;height:100%;padding:2px;box-sizing:border-box;display:block;}
+.hero h1{margin:0;font-size:18px;font-weight:600;}
+.hero .ht{display:flex;flex-direction:column;line-height:1.25;}
+.hero .ht h1{margin:0;}
+.hero .cn{font-size:11.5px;font-weight:500;opacity:.8;margin-top:2px;}
+.hero .sub{margin-left:auto;font-size:12.5px;opacity:.9;text-align:right;}
+.hero .sub b{font-size:15px;}
+.kpis{display:flex;gap:10px;margin:0 0 14px;flex-wrap:wrap;}
+.kpi{flex:1;min-width:110px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 14px;box-shadow:0 2px 6px rgba(22,41,77,.05);transition:transform .18s ease,box-shadow .18s ease;}
+.kpi:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(22,41,77,.10);}
+.kpi .n{font-size:22px;font-weight:700;line-height:1;color:var(--navy);}
+.kpi .l{font-size:10.5px;color:var(--mut);margin-top:5px;text-transform:uppercase;letter-spacing:.4px;}
+.kpi.good .n{color:var(--green);}
+.kpi.warn .n{color:var(--red);}
+.board{display:flex;gap:14px;overflow-x:auto;padding-bottom:10px;}
+.col{flex:0 0 250px;background:var(--col);border:1px solid var(--line);border-radius:14px;padding:0 0 10px;overflow:hidden;}
+.col .top{border-top:3px solid var(--sc);padding:12px 13px 8px;}
+.col h2{margin:0;font-size:12px;font-weight:700;letter-spacing:.4px;color:var(--ink);text-transform:uppercase;display:flex;align-items:center;gap:6px;}
+.col h2 .ct{margin-left:auto;background:#fff;color:var(--sc);font-size:11px;font-weight:700;padding:1px 9px;border-radius:20px;border:1px solid var(--line);}
+.col .val{font-size:11.5px;color:var(--mut);margin-top:4px;font-weight:600;min-height:15px;}
+.col .body{padding:4px 10px 0;}
+.deal{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--sc);border-radius:10px;padding:10px 12px;margin-bottom:9px;box-shadow:0 1px 3px rgba(22,41,77,.05);transition:transform .16s ease,box-shadow .16s ease;}
+.deal:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(22,41,77,.12);}
+.deal .hd{display:flex;align-items:flex-start;gap:6px;}
+.deal .dn{font-weight:600;font-size:13px;line-height:1.35;flex:1;}
+.deal .score{flex:none;font-size:10px;font-weight:800;border-radius:20px;padding:2px 8px;letter-spacing:.3px;}
+.sA{background:var(--greenbg);color:var(--green);}
+.sB{background:#eaf1fb;color:var(--blue);}
+.sC{background:var(--amberbg);color:var(--amber);}
+.deal .amt{color:var(--sc);font-weight:700;font-size:12.5px;margin-top:4px;}
+.deal .src{display:inline-block;font-size:10px;font-weight:600;color:var(--mut);background:var(--col);border:1px solid var(--line);border-radius:20px;padding:1px 8px;margin-top:6px;}
+.deal .na{font-size:11.5px;color:var(--mut);margin-top:6px;line-height:1.4;}
+.deal .na b{color:var(--ink);font-weight:600;}
+.deal .na.due{color:var(--red);}
+.empty{color:var(--faint);font-size:12px;font-style:italic;padding:8px 2px;}
+.muted{color:var(--faint);font-size:13px;padding:10px 2px;}
+.err{color:var(--red);font-size:12.5px;padding:10px 2px;}
+.loading{color:var(--faint);font-style:italic;font-size:13px;padding:10px 2px;}
+.foot{margin-top:8px;text-align:center;color:var(--faint);font-size:11.5px;}
+</style>
+</head>
+<body>
+
+<!-- Shared by BOTH tiers: Core draws the shield in its hero, Operator in
+     its nav bar. Keep this outside every TIER block or one tier gets a
+     <use> pointing at a symbol that was stripped out from under it. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<clipPath id="zxsl"><rect x="0" y="0" width="50" height="100"/></clipPath>
+<clipPath id="zxsr"><rect x="50" y="0" width="50" height="100"/></clipPath>
+<mask id="zxsx"><rect width="100" height="100" fill="#fff"/><path d="M32 30 L68 68 M68 30 L32 68" stroke="#000" stroke-width="9.5" stroke-linecap="square"/></mask>
+<symbol id="zxshield" viewBox="0 0 100 100">
+<g mask="url(#zxsx)">
+<path d="M50 8 L86 20 C86 52 74 76 50 92 C26 76 14 52 14 20 Z" fill="#0F2038" clip-path="url(#zxsl)"/>
+<path d="M50 8 L86 20 C86 52 74 76 50 92 C26 76 14 52 14 20 Z" fill="#1559D0" clip-path="url(#zxsr)"/>
+</g></symbol>
+</defs></svg>
+
+<div class="wrap">
+  <div class="hero"><span class="logo"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#zxshield"/></svg></span><div class="ht"><h1>Zoxiro Pipeline</h1><span class="cn">{{COMPANY_NAME}}</span></div><span class="sub" id="sub"></span></div>
+  <div class="kpis" id="kpis" style="display:none"></div>
+  <div id="board" class="board"><div class="loading">Loading your pipeline&hellip;</div></div>
+  <div class="foot">Live from your connected CRM &middot; refreshes each time you open &middot; Zoxiro Pipeline {{PLUGIN_VERSION}}</div>
+</div>
+<script>
+var CRM="{{CRM_SEARCH_TOOL}}";
+var STAGES={{STAGES_JSON}};
+var PALETTE=["#2E5496","#1d9e75","#7f77dd","#ba7517","#137a4b","#b03a5b","#5b7a99"];
+function esc(s){return (s||'').replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+function money(n){n=Number(n);if(!n)return '';return '$'+Math.round(n).toLocaleString();}
+async function call(name,args){var r=await window.cowork.callMcpTool(name,args);if(r&&r.isError)throw new Error('e');try{return r.structuredContent ?? JSON.parse(r.content[0].text);}catch(e){return r.structuredContent||{};}}
+function overdue(d){if(!d)return false;var t=new Date(d).getTime();return t && t < Date.now()-86400000;}
+(async function(){
+ var bd=document.getElementById('board');
+ if(!CRM){bd.innerHTML='<div class="muted">Connect a CRM and your deals appear here as a live board.</div>';return;}
+ try{
+  var r=await call(CRM,{objectType:'deals',limit:100,
+    properties:['dealname','dealstage','amount','deal_score','source','next_action','next_action_date','closedate'],
+    chatInsights:{userIntent:'render live pipeline board',satisfaction:'NEUTRAL'}});
+  var deals=(r.results||[]).map(function(d){var p=d.properties||{};return{
+    name:p.dealname||'(unnamed deal)',stage:p.dealstage||'Other',amount:Number(p.amount)||0,
+    score:(p.deal_score||'').toString().charAt(0).toUpperCase(),src:p.source||'',
+    na:p.next_action||'',due:overdue(p.next_action_date)};});
+  if(!deals.length){bd.innerHTML='<div class="muted">No deals in your CRM yet. Add leads through Pipeline and they appear here.</div>';return;}
+  var known={};STAGES.forEach(function(s){known[s.toLowerCase()]=s;});
+  var cols=STAGES.slice();var extra=false;
+  deals.forEach(function(d){if(!known[(d.stage||'').toLowerCase()]){extra=true;}});
+  if(extra)cols=cols.concat(['Other']);
+  var gv=deals.reduce(function(a,d){return a+d.amount;},0);
+  document.getElementById('sub').innerHTML='<b>'+deals.length+'</b> deals &middot; '+(gv?money(gv):'&mdash;')+' total';
+  var aCt=deals.filter(function(d){return d.score==='A';}).length;
+  var dueCt=deals.filter(function(d){return d.due;}).length;
+  var last=STAGES[STAGES.length-1]||'';
+  var actCt=deals.filter(function(d){return d.stage.toLowerCase()!==last.toLowerCase();}).length;
+  var k=document.getElementById('kpis');k.style.display='flex';
+  k.innerHTML='<div class="kpi"><div class="n">'+actCt+'</div><div class="l">Active deals</div></div>'+
+   '<div class="kpi"><div class="n">'+(gv?money(gv):'&ndash;')+'</div><div class="l">Pipeline value</div></div>'+
+   '<div class="kpi good"><div class="n">'+aCt+'</div><div class="l">A-scored &mdash; work first</div></div>'+
+   '<div class="kpi warn"><div class="n">'+dueCt+'</div><div class="l">Next actions overdue</div></div>';
+  bd.innerHTML=cols.map(function(st,i){
+    var c=PALETTE[i%PALETTE.length];
+    var list=deals.filter(function(d){return st==='Other' ? !known[(d.stage||'').toLowerCase()] : (d.stage||'').toLowerCase()===st.toLowerCase();});
+    var sum=list.reduce(function(a,d){return a+d.amount;},0);
+    var cards=list.length?list.map(function(d){
+      return '<div class="deal" style="--sc:'+c+'">'+
+        '<div class="hd"><div class="dn">'+esc(d.name)+'</div>'+(d.score&&'ABC'.indexOf(d.score)>-1?'<span class="score s'+d.score+'">'+d.score+'</span>':'')+'</div>'+
+        (d.amount?'<div class="amt" style="--sc:'+c+'">'+money(d.amount)+'</div>':'')+
+        (d.src?'<span class="src">'+esc(d.src)+'</span>':'')+
+        (d.na?'<div class="na'+(d.due?' due':'')+'">'+(d.due?'&#9873; ':'')+'<b>Next:</b> '+esc(d.na)+'</div>':'')+
+      '</div>';}).join(''):'<div class="empty">No deals here.</div>';
+    return '<div class="col" style="--sc:'+c+'"><div class="top"><h2>'+esc(st)+'<span class="ct" style="--sc:'+c+'">'+list.length+'</span></h2><div class="val">'+(sum?money(sum):'&nbsp;')+'</div></div><div class="body">'+cards+'</div></div>';
+  }).join('');
+ }catch(e){bd.innerHTML='<div class="err">Couldn\'t load your CRM. Click Reload. If this keeps failing after you reconnected the CRM, say \'regenerate my pipeline board\'.</div>';}
+})();
+</script>
+</body></html>

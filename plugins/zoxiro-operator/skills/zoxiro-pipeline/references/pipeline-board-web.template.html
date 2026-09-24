@@ -1,0 +1,404 @@
+<title>Zoxiro Pipeline Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;900&family=Lato:wght@400;700;900&display=swap">
+<style>
+
+:root{color-scheme:light dark;--zx-blue:#1559D0;--white:#ffffff;--tint:#f4f6fb;--tint-2:#eaeff8;--ink:#16202e;--ink-2:#4d5867;--ink-3:#7d879a;--line:#e2e8f2;--blue:#2b7ffd;--blue-2:#4da0ff;--blue-deep:#1a5fd0;--blue-soft:#eaf2ff;--navy:#0b1424;--radius:12px;--radius-sm:8px;--font:'Lato','Segoe UI',system-ui,-apple-system,sans-serif;--display:'Archivo','Lato',system-ui,sans-serif;--mut:#4d5867;--card:#ffffff;--bg:#f4f6fb;--green:#137a4b;--greenbg:#e7f6ee;--amber:#8a5d00;--amberbg:#fbf1da;--red:#c0392b;--redbg:#fcece9;--shadow:0 2px 6px rgba(22,41,77,.06);--shadow-2:0 10px 26px rgba(22,41,77,.13);--hdr-1:#0b1424;--hdr-2:#1a4fa8;--hdr-ink:#ffffff;--hdr-sub:#a9c4ee;--rule:#2b7ffd;}
+:root:not([data-theme="light"]){}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--zx-blue:#5c9dff;--white:#151b24;--tint:#171d27;--tint-2:#1d2531;--ink:#e8edf5;--ink-2:#a8b3c4;--ink-3:#7d879a;--line:#2a3442;--blue:#5c9dff;--blue-2:#7db4ff;--blue-deep:#9cc5ff;--blue-soft:#182535;--navy:#e8edf5;--mut:#a8b3c4;--card:#151b24;--bg:#0f141b;--green:#4ecb8e;--greenbg:#14291f;--amber:#e0b357;--amberbg:#2b2416;--red:#ff8a7a;--redbg:#2e1a18;--shadow:0 2px 6px rgba(0,0,0,.35);--shadow-2:0 10px 26px rgba(0,0,0,.45);--hdr-1:#101a2b;--hdr-2:#1b3a66;--hdr-ink:#eaf1ff;--hdr-sub:#8fa8cf;--rule:#5c9dff;}}
+:root[data-theme="dark"]{--zx-blue:#5c9dff;--white:#151b24;--tint:#171d27;--tint-2:#1d2531;--ink:#e8edf5;--ink-2:#a8b3c4;--ink-3:#7d879a;--line:#2a3442;--blue:#5c9dff;--blue-2:#7db4ff;--blue-deep:#9cc5ff;--blue-soft:#182535;--navy:#e8edf5;--mut:#a8b3c4;--card:#151b24;--bg:#0f141b;--green:#4ecb8e;--greenbg:#14291f;--amber:#e0b357;--amberbg:#2b2416;--red:#ff8a7a;--redbg:#2e1a18;--shadow:0 2px 6px rgba(0,0,0,.35);--shadow-2:0 10px 26px rgba(0,0,0,.45);--hdr-1:#101a2b;--hdr-2:#1b3a66;--hdr-ink:#eaf1ff;--hdr-sub:#8fa8cf;--rule:#5c9dff;}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;line-height:1.6}
+.wrap{max-width:1080px;margin:0 auto;padding:18px}
+.sxnav{background:var(--card);border-bottom:1px solid var(--line)}
+.sxnav-inner{max-width:1080px;margin:0 auto;padding:11px 18px;display:flex;align-items:center;gap:14px}
+.wordmark{display:inline-flex;align-items:center;font-family:var(--display);font-weight:700;font-size:1.5rem;letter-spacing:.13em;color:var(--ink);white-space:nowrap}
+.sxnav .right{margin-left:auto;font-size:.74rem;color:var(--ink-3);font-weight:900;letter-spacing:.1em}
+.sxhero{background:linear-gradient(180deg,var(--blue-soft) 0%,var(--bg) 62%);border-bottom:1px solid var(--line)}
+.sxhero-in{max-width:1080px;margin:0 auto;padding:30px 18px 24px}
+.eyebrow{display:block;font-size:.76rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:var(--blue);margin-bottom:8px}
+.sxhero h1{font-family:var(--display);font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.15;letter-spacing:-.015em;margin:0;text-wrap:balance}
+.sxhero .sub{font-size:.98rem;color:var(--ink-2);margin:10px 0 0}
+.livepill{display:inline-flex;align-items:center;gap:7px;margin-left:10px;vertical-align:middle;padding:3px 10px 3px 8px;border-radius:999px;font-size:.68rem;font-weight:900;letter-spacing:.09em;text-transform:uppercase;border:1px solid var(--line);background:var(--tint);color:var(--ink-3);transition:background .25s,border-color .25s,color .25s}
+.livepill .lvd{width:8px;height:8px;border-radius:50%;background:var(--ink-3);flex:none}
+.livepill .lvw{font-weight:700;letter-spacing:.02em;text-transform:none;opacity:.85}
+.livepill.is-live{background:var(--greenbg);border-color:var(--green);color:var(--green)}
+.livepill.is-live .lvd{background:var(--green);animation:sflive 2.4s ease-out infinite}
+.livepill.is-off{background:var(--amberbg);border-color:var(--amber);color:var(--amber)}
+.livepill.is-off .lvd{background:var(--amber)}
+@keyframes sflive{0%{box-shadow:0 0 0 0 rgba(25,164,99,.55)}70%{box-shadow:0 0 0 7px rgba(25,164,99,0)}100%{box-shadow:0 0 0 0 rgba(25,164,99,0)}}
+@media (prefers-reduced-motion:reduce){.livepill.is-live .lvd{animation:none}}
+.chips{display:flex;gap:10px;margin:16px 0 4px;flex-wrap:wrap}
+.chip{flex:1;min-width:124px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;transition:transform .18s,box-shadow .18s,border-color .18s}
+.chip::before{content:"";display:block;height:4px;background:var(--rule)}
+.chip.warn::before{background:var(--red)}
+.chip a,.chip .pad{display:block;padding:13px 15px 14px;text-decoration:none;color:inherit}
+.chip a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.chip:hover{transform:translateY(-2px);box-shadow:var(--shadow-2);border-color:var(--blue)}
+.chip:hover .l{color:var(--blue-deep)}
+.chip .n{font-size:30px;font-weight:900;line-height:1;color:var(--navy);font-variant-numeric:tabular-nums;font-family:var(--display);white-space:nowrap}
+.chip .n.len6{font-size:25px}
+.chip .n.len8{font-size:21px;letter-spacing:-.01em}
+.chip .n.len10{font-size:18px;letter-spacing:-.02em}
+/* the money tile carries a longer string than the counts, so it gets more of the row */
+.chip.wide{flex:1.7}
+.chip .l{font-size:10.5px;color:var(--mut);margin-top:6px;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.chip.warn .n{color:var(--red)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:14px;margin-top:14px;align-items:start}
+/* Cards carry the pipeline board's column treatment: a bright rule on top, a deep
+   header band, then a quiet body. The header is a solid block rather than a label so
+   the eye lands on the section before the rows — the same reason the board reads at a
+   glance and a flat list does not. */
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .2s,transform .2s}
+.card:hover{box-shadow:var(--shadow-2);transform:translateY(-2px)}
+.card::before{content:"";display:block;height:4px;background:var(--rule)}
+.card h2{margin:0;padding:13px 18px;background:linear-gradient(135deg,var(--hdr-1) 0%,var(--hdr-2) 100%);color:var(--hdr-ink);font-size:.82rem;text-transform:uppercase;letter-spacing:.1em;font-weight:900;display:flex;align-items:center;gap:10px;font-family:var(--display)}
+.card h2 .ct{margin-left:auto;background:rgba(255,255,255,.17);color:var(--hdr-ink);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:2px 11px;font-size:.76rem;letter-spacing:0;font-weight:900;font-variant-numeric:tabular-nums;min-width:26px;text-align:center}
+.card h2 .sub{display:block;margin-top:3px;font-size:.68rem;font-weight:700;letter-spacing:.04em;text-transform:none;color:var(--hdr-sub)}
+.card h2 .ttl{display:flex;flex-direction:column;line-height:1.25}
+.cardbody{padding:14px 18px 16px;flex:1}
+.row{padding:9px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.row .t{font-weight:700;font-size:.92rem}
+.row .m{font-size:.8rem;color:var(--ink-3);margin-top:2px}
+.row a{color:inherit;text-decoration:none}
+.row a:hover .t{color:var(--blue-deep);text-decoration:underline}
+.row{margin-left:-18px;margin-right:-18px;padding-left:18px;padding-right:18px;border-left:3px solid transparent;transition:background .15s,border-color .15s}
+.row:hover{background:var(--tint);border-left-color:var(--rule)}
+.pill{display:inline-block;font-size:.68rem;font-weight:900;border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:middle}
+.pill.od{background:var(--redbg);color:var(--red)}
+.pill.tod{background:var(--tint-2);color:var(--ink-2)}
+.muted{color:var(--ink-3);font-size:.88rem}
+.err{background:var(--amberbg);border:1px solid var(--amber);color:var(--amber);border-radius:var(--radius-sm);padding:10px 12px;font-size:.85rem}
+.err b{display:block;margin-bottom:2px}
+.banner{display:flex;gap:10px;align-items:flex-start;background:var(--amberbg);border:1px solid var(--amber);color:var(--amber);border-radius:var(--radius);padding:12px 14px;margin:14px 0;font-size:.88rem}
+.foot{margin:22px 0 8px;font-size:.76rem;color:var(--ink-3);text-align:center}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3);font-weight:900}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+
+/* ---- board-specific -------------------------------------------------------- */
+.logo{display:inline-flex;align-items:center;gap:12px}
+.logo>svg{width:42px;height:42px}
+.wm-x{color:var(--zx-blue)}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){.wm-x{background:linear-gradient(90deg,var(--ink) 0 50%,var(--zx-blue) 50%);-webkit-background-clip:text;background-clip:text;color:transparent}}
+/* THREE REAL COLUMNS, not a grid. A grid aligns every card to a row boundary, so a
+   short card sat under the tallest card in its row with a gap in between — which is why
+   Other floated well below Watch instead of sitting under it. Each column is its own
+   flex stack now, so cards butt up against the one above them. Placement is still read
+   left to right (stage i goes to column i%3), so the board reads the same as before. */
+.board{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;align-items:flex-start}
+.bcol{flex:1 1 290px;min-width:0;display:flex;flex-direction:column;gap:14px}
+@media (max-width:639px){.bcol{flex-basis:100%}}
+.deal{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--sc,var(--rule));border-radius:10px;padding:11px 13px;margin-bottom:9px;transition:transform .15s,box-shadow .15s}
+.deal:last-child{margin-bottom:0}
+.deal:hover{transform:translateX(2px);box-shadow:var(--shadow)}
+.deal .hd{display:flex;align-items:flex-start;gap:7px}
+.deal .dn{font-weight:700;font-size:13.5px;line-height:1.35;flex:1}
+.badge{flex:none;font-size:9.5px;font-weight:900;border-radius:20px;padding:2px 9px;letter-spacing:.06em}
+.bBUY{background:var(--greenbg);color:var(--green)}
+.bWATCH{background:var(--blue-soft);color:var(--blue-deep)}
+.bVERIFY{background:var(--amberbg);color:var(--amber)}
+.bPASS{background:var(--redbg);color:var(--red)}
+.deal .amt{color:var(--blue-deep);font-weight:900;font-size:13px;margin-top:5px;font-variant-numeric:tabular-nums}
+.deal .chipx{display:inline-block;font-size:10px;font-weight:700;color:var(--ink-3);background:var(--tint);border:1px solid var(--line);border-radius:20px;padding:2px 9px;margin:7px 4px 0 0}
+.deal .na{font-size:11.5px;color:var(--ink-2);margin-top:7px;line-height:1.45}
+.deal .na b{color:var(--ink)}
+.deal .na.killed{color:var(--red)}
+.empty{color:var(--ink-3);font-size:12px;font-style:italic;padding:6px 2px}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<clipPath id="zxsl"><rect x="0" y="0" width="50" height="100"/></clipPath>
+<clipPath id="zxsr"><rect x="50" y="0" width="50" height="100"/></clipPath>
+<mask id="zxsx"><rect width="100" height="100" fill="#fff"/><path d="M32 30 L68 68 M68 30 L32 68" stroke="#000" stroke-width="9.5" stroke-linecap="square"/></mask>
+<symbol id="zxshield" viewBox="0 0 100 100">
+<g mask="url(#zxsx)">
+<path d="M50 8 L86 20 C86 52 74 76 50 92 C26 76 14 52 14 20 Z" fill="#0F2038" clip-path="url(#zxsl)"/>
+<path d="M50 8 L86 20 C86 52 74 76 50 92 C26 76 14 52 14 20 Z" fill="#1559D0" clip-path="url(#zxsr)"/>
+</g></symbol>
+</defs></svg>
+
+<div class="sxnav"><div class="sxnav-inner">
+  <span class="logo"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#zxshield"/></svg>
+  <span class="wordmark">ZO<span class="wm-x">X</span>IRO</span></span>
+  <span class="right">{{TIER_NAME}}</span>
+</div></div>
+
+<section class="sxhero"><div class="sxhero-in">
+  <span class="eyebrow">Pipeline Board &middot; {{COMPANY_NAME}}<span class="livepill" id="livepill" title="Contacting your connectors."><span class="lvd"></span><span class="lvt">Connecting</span></span></span>
+  <h1>Every deal, and what the numbers said</h1>
+  <p class="sub" id="sub">&mdash;</p>
+</div></section>
+
+<div class="wrap">
+  <div id="pagebanner"></div>
+  <div class="chips" id="kpis"></div>
+  <div id="board" class="board"><div class="muted">Loading your pipeline&hellip;</div></div>
+  <div class="foot" id="foot">Live from your underwrite queue in Drive &middot; refreshes each time you open &middot; Zoxiro Pipeline Board {{PLUGIN_VERSION}} (web)</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+/* ============================================================================
+   Zoxiro Pipeline Board — WEB surface.
+
+   Same relationship to the desktop board as the Morning Dashboard's web template:
+   this one speaks claude.use("mcp") + callTool and is granted by its PUBLISHED
+   capabilities manifest. The desktop board speaks a different API and is granted a
+   different way. Never swap one for the other — the result publishes "successfully"
+   and can never be granted anything.
+
+   Columns come from what the underwriter CONCLUDED (the verdict), never from the
+   queue status. Status only says whether the underwriter has RUN, which lumps a deal
+   killed on margin together with a live conditional — the owner cannot act on that.
+   ========================================================================== */
+
+var DRIVE = {{DRIVE_SERVER_JSON}};
+var QUEUE = "underwrite-queue";
+
+/* COLUMN ORDER, set by the owner rather than by the journey a deal travels. Passed sits
+   third — right after the two columns that need a decision — and Other comes last, which
+   on a five-column board drops it directly under Watch — conditional.
+   Worth knowing: the board is a grid that wraps at three columns, so these are positions
+   in a sequence, not fixed cells. A column is only drawn when it holds deals, so the day
+   a "New" or "Offer Out" column appears, everything after it shifts one place along. */
+var STAGES = ["New","Needs comps","Watch — conditional","Passed","Buy","Offer Out","Under Contract","Closed"];
+
+var LIVE="connecting";
+function nowShort(){ try{ return new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}); }catch(e){ return ""; } }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function money(n){ n=Number(n); if(!n) return ""; return "$"+Math.round(n).toLocaleString(); }
+function pill(state,when){
+  var el=document.getElementById("livepill"); if(!el) return;
+  var t = state==="live"?"Live":state==="off"?"Not connected":"Connecting";
+  el.className="livepill"+(state==="live"?" is-live":state==="off"?" is-off":"");
+  el.innerHTML='<span class="lvd"></span><span class="lvt">'+t+'</span>'+(when?'<span class="lvw"> &middot; '+esc(when)+'</span>':'');
+  el.title = state==="live"?("Read from Drive at "+when+"."):state==="off"?"This page could not reach Drive. Reconnect it in claude.ai Settings → Connectors, then reload.":"Contacting Drive.";
+  LIVE=state;
+}
+function errCopy(err, notThis){
+  var c=(err&&err.code)||"upstream_error", server=(err&&err.server)||"Google Drive", head, fix;
+  if(c==="needs_reauth"){ head="Sign-in expired"; fix="Reconnect "+server+" in claude.ai Settings → Connectors, then reload."; }
+  else if(c==="server_not_connected"){ head=server+" isn't connected"; fix="Add it in claude.ai Settings → Connectors, then reload."; }
+  else if(c==="selection_required"){ head="More than one "+server; fix="Choose which one to use when prompted, then reload."; }
+  else if(c==="blocked_by_policy"){ head="Blocked by policy"; fix="Your organization blocks this connector for this page."; }
+  else if(c==="not_in_manifest"){ head="Not permitted on this page"; fix="This board wasn't published with access to that tool."; }
+  else if(c==="server_unavailable"){ head=server+" didn't respond"; fix="Usually brief. Reload in a moment."; }
+  else if(c==="tool_error"){ head=server+" reported an error"; fix=(err&&err.message)||"Try again shortly."; }
+  else if(c==="not_granted"||c==="capability_disabled"||c==="capability_removed"){ head="No connector access"; fix="This view can't reach Drive at all."; }
+  else { head="Couldn't load your queue"; fix=(err&&err.message)||"Try reloading."; }
+  return '<div class="err"><b>'+esc(head)+'</b>'+esc(notThis)+' '+esc(fix)+'</div>';
+}
+
+function parseCSV(txt){
+  var rows=[],row=[],cur="",q=false;
+  for(var i=0;i<txt.length;i++){
+    var c=txt[i];
+    if(q){ if(c==='"'){ if(txt[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+    else if(c==='"') q=true;
+    else if(c===","){ row.push(cur); cur=""; }
+    else if(c==="\n"){ row.push(cur); rows.push(row); row=[]; cur=""; }
+    else if(c==="\r"){ }
+    else cur+=c;
+  }
+  if(cur.length||row.length){ row.push(cur); rows.push(row); }
+  return rows.filter(function(r){ return r.join("").trim().length; });
+}
+function firstSentence(t){
+  t=(t||"").trim(); if(!t) return "";
+  var m=t.match(/^[^.]{0,180}\./); return (m?m[0]:t.slice(0,160)).trim();
+}
+/* The verdict decides the column. Status only says whether the underwriter ran. */
+function derive(status, verdict){
+  if(/^\s*WATCH/i.test(verdict)) return "Watch — conditional";
+  if(/^\s*(PASS|WALK)/i.test(verdict)) return "Passed";
+  if(/^\s*BUY/i.test(verdict)) return "Buy";
+  if(/PENDING/i.test(verdict)) return "Needs comps";
+  return (status||"Other").trim();
+}
+
+var mcp=null;
+function call(server,tool,input,opts){
+  return mcp.callTool(server,tool,input,opts).then(function(r){
+    if(LIVE!=="live") pill("live", nowShort());
+    return (r && r.payload!==undefined) ? r.payload : (r&&r.structuredContent)||{};
+  }, function(e){ if(LIVE==="connecting") pill("off"); throw e; });
+}
+
+function render(rows){
+  var bd=document.getElementById("board");
+  if(!rows || rows.length<2){
+    bd.innerHTML='<div class="muted">Your queue is empty &mdash; nothing waiting to underwrite. Deals land here once the morning deal scan queues one.</div>';
+    return;
+  }
+  var hdr=rows[0].map(function(h){ return h.trim().toLowerCase(); });
+  function col(){ for(var i=0;i<arguments.length;i++){ var j=hdr.indexOf(arguments[i]); if(j>=0) return j; } return -1; }
+  var iAddr=col("address"), iMkt=col("market","city state"), iAsk=col("ask","price"),
+      iVer=col("est spread","verdict"), iSrc=col("source"), iSt=col("queue status","status"),
+      iDate=col("date added","date","screened on","screened_on","added");
+
+  var deals=rows.slice(1).map(function(r){
+    var verdict=(iVer>=0?r[iVer]:"")||"";
+    return { added:(iDate>=0?r[iDate]:"").trim(),
+             name:(iAddr>=0?r[iAddr]:r[0]||"").trim(),
+             stage:derive(iSt>=0?r[iSt]:"", verdict),
+             amount:Number(String(iAsk>=0?r[iAsk]:"").replace(/[^0-9.]/g,""))||0,
+             market:(iMkt>=0?r[iMkt]:"").trim(),
+             src:(iSrc>=0?r[iSrc]:"").trim().replace(/\s*\(.*$/,""),
+             na:firstSentence(verdict),
+             killed:/^\s*(PASS|WALK)/i.test(verdict), pending:/PENDING/i.test(verdict),
+             watch:/^\s*WATCH/i.test(verdict), buy:/^\s*BUY/i.test(verdict) };
+  }).filter(function(d){ return d.name; });
+
+  /* PASSES AGE OUT AT 30 DAYS. A pass is a decision already made — it is on the board so
+     the owner can see WHY a deal is gone and catch a price cut worth a second look, not
+     as work. Past a month it is history, and a Passed column that only ever grows buries
+     the four columns that still need her. The rows stay in the CSV and in the pass
+     ledger; only the board stops showing them, and it says how many it dropped rather
+     than quietly shrinking the count. */
+  var PASS_DROP_DAYS = 30;
+  function daysOld(v){
+    var t = new Date(v).getTime();
+    if(!isFinite(t)) return null;
+    return Math.floor((Date.now() - t) / 86400000);
+  }
+  var agedPasses = 0, undated = 0;
+  deals = deals.filter(function(d){
+    if(!d.killed) return true;
+    var a = d.added ? daysOld(d.added) : null;
+    if(a === null){ undated++; return true; }   /* no usable date: never drop blind */
+    if(a > PASS_DROP_DAYS){ agedPasses++; return false; }
+    return true;
+  });
+
+  if(!deals.length){ bd.innerHTML='<div class="muted">Your queue is empty &mdash; nothing waiting to underwrite.</div>'; return; }
+
+  var known={}; STAGES.forEach(function(s){ known[s.toLowerCase()]=s; });
+  var cols=STAGES.filter(function(s){ return deals.some(function(d){ return d.stage.toLowerCase()===s.toLowerCase(); }); });
+  /* OTHER is the catch-all: a deal whose queue status matches none of the stages above —
+     usually a typo in the CSV, a status the underwriter has not seen before, or a row
+     added by hand. It is never empty by design and never hidden, because a deal nobody
+     can see is worse than a deal in the wrong column. It goes last in the sequence, which
+     on a five-column board lands it under Watch — conditional. */
+  if(deals.some(function(d){ return !known[d.stage.toLowerCase()]; })) cols.push("Other");
+
+  var gv=deals.reduce(function(a,d){ return a+d.amount; },0);
+  var kill=deals.filter(function(d){ return d.killed; }).length;
+  var pend=deals.filter(function(d){ return d.pending; }).length;
+  var worth=deals.filter(function(d){ return d.watch||d.buy; }).length;
+  var live=deals.length-kill;
+
+  document.getElementById("sub").innerHTML='<b>'+deals.length+'</b> in queue &middot; '+(gv?money(gv)+" asked":"&mdash;");
+
+  /* KPI tiles use the same component as the morning dashboard's counts, so the two
+     boards read as one product rather than two that happen to share a logo. */
+  /* Size the number to the string it actually is. CSS cannot measure text length, so
+     the class comes from here — otherwise a five-figure total renders clipped and the
+     owner reads a wrong number with no sign anything was cut. */
+  function fit(v){
+    v = String(v);
+    var c = v.length >= 10 ? " len10" : v.length >= 8 ? " len8" : v.length >= 6 ? " len6" : "";
+    return '<div class="n'+c+'">'+v+'</div>';
+  }
+  function kpi(v,label,cls){
+    return '<div class="chip'+(cls?" "+cls:"")+'"><div class="pad">'+fit(v)+'<div class="l">'+label+'</div></div></div>';
+  }
+  document.getElementById("kpis").innerHTML=
+  /* The red tile and the Needs comps column say the same thing, so they sit in the same
+     place: second in the row, second in the board. Exact pixel alignment is not possible —
+     a column only appears when it holds deals — but the reading order now matches. */
+     kpi(live,"Still live")
+   + kpi(pend,"Need comps first","warn")
+   + kpi(worth,"Worth your time")
+   + kpi(gv?money(gv):"–","Total asked","wide")
+   + kpi(kill,"Killed on the numbers");
+
+  /* Deal out the stages across three columns in reading order, then drop Other into the
+     column Watch — conditional landed in, directly beneath it. */
+  var NCOL = 3;
+  var buckets = [[],[],[]];
+  cols.filter(function(st){ return st !== "Other"; })
+      .forEach(function(st, i){ buckets[i % NCOL].push(st); });
+  if(cols.indexOf("Other") >= 0){
+    var placed = false;
+    for(var b = 0; b < NCOL && !placed; b++){
+      var w = buckets[b].indexOf("Watch — conditional");
+      if(w >= 0){ buckets[b].splice(w + 1, 0, "Other"); placed = true; }
+    }
+    if(!placed) buckets[1].push("Other");
+  }
+
+  function renderCol(st){
+    var list=deals.filter(function(d){ return st==="Other" ? !known[d.stage.toLowerCase()] : d.stage.toLowerCase()===st.toLowerCase(); });
+    var sum=list.reduce(function(a,d){ return a+d.amount; },0);
+    var cards=list.length ? list.map(function(d){
+      var b = d.buy?"BUY" : d.watch?"WATCH" : d.pending?"VERIFY" : d.killed?"PASS" : "";
+      return '<div class="deal">'
+        + '<div class="hd"><div class="dn">'+esc(d.name)+'</div>'+(b?'<span class="badge b'+b+'">'+b+'</span>':'')+'</div>'
+        + (d.amount?'<div class="amt">'+money(d.amount)+' ask</div>':'')
+        + (d.market?'<span class="chipx">'+esc(d.market)+'</span>':'')
+        + (d.src?'<span class="chipx">'+esc(d.src)+'</span>':'')
+        + (d.na?'<div class="na'+(d.killed?" killed":"")+'"><b>Verdict:</b> '+esc(d.na)+'</div>':'')
+        + '</div>';
+    }).join("") : '<div class="empty">Nothing here.</div>';
+    if(st==="Passed"){
+      if(agedPasses) cards += '<div class="empty">'+agedPasses+' pass'+(agedPasses===1?"":"es")
+        + ' over '+PASS_DROP_DAYS+' days old, cleared from the board. Still in the queue file.</div>';
+      if(undated) cards += '<div class="empty">'+undated+' pass'+(undated===1?"":"es")
+        + ' with no date, kept.</div>';
+    }
+    var subline = st==="Other"
+      ? "status not recognised — needs a stage"
+      : (sum?money(sum)+" asked":"&nbsp;");
+    return '<div class="card"><h2><span class="ttl">'+esc(st)
+         + '<span class="sub">'+subline+'</span></span>'
+         + '<span class="ct">'+list.length+'</span></h2>'
+         + '<div class="cardbody">'+cards+'</div></div>';
+  }
+
+  bd.innerHTML = buckets.map(function(list){
+    return '<div class="bcol">' + list.map(renderCol).join("") + '</div>';
+  }).join("");
+}
+
+function boot(){
+  call(DRIVE,"search_files",{query:"title contains '"+QUEUE+"'",pageSize:10,excludeContentSnippets:true},{cache:{staleTime:60000}})
+  .then(function(p){
+    var files=(p&&p.files)||[];
+    if(!files.length) throw {code:"tool_error", message:"No underwrite-queue.csv found in your Zoxiro Drive folder."};
+    files.sort(function(a,b){ return new Date(b.modifiedTime)-new Date(a.modifiedTime); });
+    return call(DRIVE,"download_file_content",{fileId:files[0].id});
+  })
+  .then(function(p){
+    var txt="";
+    try{ txt=decodeURIComponent(escape(atob((p&&p.content)||""))); }
+    catch(e){ txt=(p&&p.content)||""; }
+    render(parseCSV(txt));
+  })
+  .catch(function(e){
+    document.getElementById("board").innerHTML=errCopy(e," This is not &ldquo;no deals&rdquo; &mdash;");
+  });
+}
+
+if(window.claude && typeof window.claude.use==="function"){
+  window.claude.use("mcp").then(function(ns){
+    if(!ns){
+      pill("off");
+      document.getElementById("pagebanner").innerHTML='<div class="banner"><span>&#9888;</span><span><b>Connector access isn\'t available in this view.</b> The board is here, but nothing can read your queue. Open it from claude.ai rather than a direct link.</span></div>';
+      document.getElementById("board").innerHTML='<div class="muted">Needs connector access.</div>';
+      return;
+    }
+    mcp=ns; boot();
+  }).catch(function(){ pill("off"); });
+} else {
+  pill("off");
+  document.getElementById("pagebanner").innerHTML='<div class="banner"><span>&#9888;</span><span><b>This page is open outside claude.ai.</b> It can only read your queue when opened from the artifact link.</span></div>';
+  document.getElementById("board").innerHTML='<div class="muted">Needs connector access.</div>';
+}
+})();
+</script>

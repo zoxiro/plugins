@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<!-- Zoxiro Morning Dashboard — WHITE-LABEL TEMPLATE {{PLUGIN_VERSION}} (enhanced visuals).
+     Generate PER USER as a persisted artifact. Substitute:
+       {{OWNER_NAME_JSON}}   -> JSON string of profile owner_name, e.g. "Rae"
+       {{COMPANY_NAME}}      -> profile company_name (uppercase looks best in the brand row)
+       {{BOOKKEEPING_INSTALLED}} -> true if the Bookkeeping module ships in this tier,
+                                else false (false shows the "Coming soon"
+                                bookkeeping teaser band; never show an STR teaser).
+                                UNQUOTED true/false - it is a JS boolean, not a string.
+                                false in this build.
+       {{CALENDAR_TOOL}}     -> user's calendar list-events tool id
+       {{GMAIL_DRAFTS_TOOL}} -> user's email list-drafts tool id
+       {{GMAIL_THREADS_TOOL}}-> user's email search-threads tool id
+       {{CRM_SEARCH_TOOL}}   -> user's CRM search tool id ("" when no CRM is in use)
+       {{DRIVE_SEARCH_TOOL}} -> user's Drive file-search tool id
+       {{DRIVE_READ_TOOL}}   -> user's Drive read-file-content tool id
+       {{JOBS_BUILD}}        -> profile `jobs_build` - the plugin version the SCHEDULED
+                                TASK PROMPTS were last rewritten from. NOT the installed
+                                version and NOT `plugin_version`. When it differs from
+                                this build the page shows a banner telling the user, in
+                                words, to open a new chat and say "refresh my scheduled
+                                tasks". Pass "" only when the user has no scheduled
+                                tasks at all; passing the installed version to silence
+                                the banner is lying to them.
+                                (both required: the pipeline card falls back to the
+                                 underwrite queue in Drive when the CRM is absent or empty)
+     Set a tool id to "" if that tool isn't connected - its card shows a connect prompt.
+     STALE IDS: tool ids change when a connector is removed/re-added. If a card that
+     previously worked starts erroring, REGENERATE this artifact with current ids. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Zoxiro Morning Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect width='100' height='100' fill='white'/%3E%3Cpath d='M32 30 L68 68 M68 30 L32 68' stroke='black' stroke-width='9.5' stroke-linecap='square'/%3E%3C/mask%3E%3CclipPath id='l'%3E%3Crect width='50' height='100'/%3E%3C/clipPath%3E%3CclipPath id='r'%3E%3Crect x='50' width='50' height='100'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg mask='url(%23m)'%3E%3Cpath d='M50 8 L86 20 C86 52 74 76 50 92 C26 76 14 52 14 20 Z' fill='%230F2038' clip-path='url(%23l)'/%3E%3Cpath d='M50 8 L86 20 C86 52 74 76 50 92 C26 76 14 52 14 20 Z' fill='%231559D0' clip-path='url(%23r)'/%3E%3C/g%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--white:#ffffff;--tint:#f4f6fb;--tint-2:#eaeff8;--ink:#16202e;--ink-2:#4d5867;--ink-3:#7d879a;--line:#e2e8f2;--blue:#2b7ffd;--blue-2:#4da0ff;--blue-deep:#1a5fd0;--blue-soft:#eaf2ff;--navy:#0b1424;--navy-2:#111d31;--radius:12px;--radius-sm:8px;--font:'Lato','Segoe UI',system-ui,-apple-system,sans-serif;--display:'Archivo','Lato',system-ui,sans-serif;--navy2:#111d31;--mut:#4d5867;--faint:#7d879a;--card:#ffffff;--bg:#f4f6fb;--accentbg:#eaf2ff;--green:#137a4b;--greenbg:#e7f6ee;--amber:#8a5d00;--amberbg:#fbf1da;--red:#c0392b;--redbg:#fcece9;}
+*{box-sizing:border-box;}
+body{margin:0;font-family:var(--font);color:var(--ink);background:transparent;-webkit-font-smoothing:antialiased;line-height:1.6;}h1,h2,.wrap{max-width:1080px;margin:0 auto;padding:18px;}
+.hero:after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.06);}
+.hero:before{content:"";position:absolute;right:40px;bottom:-60px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.05);}
+.hero .date{opacity:.85;font-size:13px;margin-top:3px;}
+.chips{display:flex;gap:10px;margin:16px 0 4px;flex-wrap:wrap;}
+.permbar{display:flex;align-items:flex-start;gap:10px;background:#fff5f5;border:1px solid #f0c2c2;border-radius:12px;padding:12px 14px;margin:0 0 12px;font-size:13.5px;color:#7a1f1f;line-height:1.5;}
+.permbar .pb{font-size:16px;line-height:1.2;}
+.sfcopy{background:#fff;border:1px solid #e0cd93;border-radius:6px;padding:1px 7px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;cursor:pointer;white-space:nowrap;}
+.sfcopy:hover{background:#fffdf6;}
+.chip{flex:1;min-width:120px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:0 2px 6px rgba(22,41,77,.05);}
+.chip .n{font-size:24px;font-weight:700;line-height:1;color:var(--navy);}
+.chip .l{font-size:11px;color:var(--mut);margin-top:5px;text-transform:uppercase;letter-spacing:.4px;}
+.chip.warn .n{color:var(--red);}
+.sfhand .sfp{display:block;margin-top:6px;font-size:12px;color:var(--ink-3);}
+.sfgo-unused{display:inline-block;margin-top:7px;background:linear-gradient(180deg,var(--blue-2),var(--blue));color:#fff;text-decoration:none;font-weight:700;font-size:13px;border-radius:var(--radius-sm);padding:8px 14px;box-shadow:0 6px 16px rgba(43,127,253,.26);transition:.16s;}
+.sfgo:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(43,127,253,.34);}
+#sfpanel{display:none;margin-top:12px;background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;font-size:13px;color:var(--ink);}
+#sfpanel .sfh{font-weight:700;margin-bottom:8px;}
+#sfpanel .sfr{display:flex;align-items:flex-start;gap:8px;padding:4px 0;}
+#sfpanel .sfd{width:8px;height:8px;border-radius:50%;margin-top:6px;flex:none;}
+#sfpanel .sfd.good{background:#2e9e5b;} #sfpanel .sfd.bad{background:#d1483f;} #sfpanel .sfd.wait{background:var(--ink-3);}
+#sfpanel .sfm{color:var(--ink-3);} 
+#sfpanel .sfn{margin-top:10px;font-size:12px;color:var(--ink-3);line-height:1.5;}
+#sfpanel .sfhand{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:12px;color:var(--ink-3);}
+#sfpanel .sfhand code{display:inline-block;margin-top:5px;background:var(--blue-soft);border:1px solid var(--line);border-radius:7px;padding:5px 9px;font-size:13px;color:var(--ink);user-select:all;}
+.sxnav{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);margin:-18px -18px 0;}
+.sxnav .logo{display:flex;align-items:center;gap:10px;width:auto;height:auto;background:none;border-radius:0;overflow:visible;font-size:inherit;}
+.sxnav .logo>svg{width:28px;height:28px;flex:0 0 28px;}
+.sxnav-inner{max-width:1080px;margin:0 auto;padding:11px 18px;display:flex;align-items:center;gap:14px;}
+.sxnav .wordmark{font-family:'Archivo',var(--font);font-weight:700;font-size:.95rem;letter-spacing:.13em;color:var(--ink);white-space:nowrap;display:inline-flex;align-items:center;}
+.wm-x{color:#1559D0}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){.wm-x{background:linear-gradient(90deg,var(--ink) 0 50%,#1559D0 50%);-webkit-background-clip:text;background-clip:text;color:transparent}}
+.sxnav .right{margin-left:auto;font-size:.74rem;color:var(--ink-3);font-weight:900;letter-spacing:.1em;}
+.sxhero{background:linear-gradient(180deg,#f7faff 0%,#ffffff 62%);border-bottom:1px solid var(--line);margin:0 -18px 16px;}
+.sxhero-in{max-width:1080px;margin:0 auto;padding:30px 18px 24px;}
+.eyebrow{display:block;font-size:.76rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:var(--blue);margin-bottom:8px;}
+/* LIVE INDICATOR. Earns its colour: green only after a connector has actually answered.
+   A pill that asserts "live" from markup alone is worse than no pill — a frozen page that
+   looks current is the exact failure this dashboard shipped once already. */
+.livepill{display:inline-flex;align-items:center;gap:7px;margin-left:10px;vertical-align:middle;padding:3px 10px 3px 8px;border-radius:999px;font-size:.68rem;font-weight:900;letter-spacing:.09em;text-transform:uppercase;border:1px solid var(--line);background:var(--tint);color:var(--ink-3);transition:background .25s ease,border-color .25s ease,color .25s ease;}
+.livepill .lvd{width:8px;height:8px;border-radius:50%;background:var(--ink-3);flex:none;}
+.livepill .lvt{white-space:nowrap;}
+.livepill .lvw{font-weight:700;letter-spacing:.02em;text-transform:none;opacity:.8;}
+.livepill.is-live{background:var(--greenbg);border-color:#b7e3ca;color:var(--green);}
+.livepill.is-live .lvd{background:#19a463;animation:sflive 2.4s ease-out infinite;}
+.livepill.is-off{background:var(--amberbg);border-color:#eddba6;color:var(--amber);}
+.livepill.is-off .lvd{background:var(--amber);}
+.livepill.is-snap{background:var(--tint-2);border-color:var(--line);color:var(--ink-2);}
+.livepill.is-snap .lvd{background:var(--ink-3);}
+@keyframes sflive{0%{box-shadow:0 0 0 0 rgba(25,164,99,.55);}70%{box-shadow:0 0 0 7px rgba(25,164,99,0);}100%{box-shadow:0 0 0 0 rgba(25,164,99,0);}}
+@media (prefers-reduced-motion:reduce){.livepill.is-live .lvd{animation:none;}}
+/* The drafts card's way out. A count you cannot act on is a status line. */
+.sendlink{display:inline-block;margin-top:11px;background:linear-gradient(180deg,var(--blue-2),var(--blue));color:#fff;text-decoration:none;font-weight:800;font-size:12.5px;border-radius:var(--radius-sm);padding:8px 14px;box-shadow:0 6px 16px rgba(43,127,253,.24);transition:.16s;}
+.sendlink:hover{transform:translateY(-1px);box-shadow:0 9px 22px rgba(43,127,253,.32);}
+.sendnote{margin-top:7px;font-size:11.5px;color:var(--ink-3);}
+.sxhero h1{font-family:var(--display);font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.15;letter-spacing:-.015em;margin:0;}
+.sxhero .sub{font-size:.98rem;color:var(--ink-2);margin:10px 0 0;}
+.actrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+.actbtn{display:flex;align-items:center;gap:9px;background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:11px 15px;font-size:13px;font-weight:700;color:var(--ink);cursor:pointer;transition:.16s ease;font-family:var(--font);}.actbtn:hover{border-color:var(--blue);color:var(--blue-deep);transform:translateY(-1px);box-shadow:0 8px 20px rgba(43,127,253,.16);}.actbtn .ab{width:26px;height:26px;border-radius:var(--radius-sm);background:var(--blue-soft);color:var(--blue-deep);display:flex;align-items:center;justify-content:center;font-size:14px;flex:none;}.actbtn small{display:block;font-weight:400;font-size:11px;color:var(--ink-3);margin-top:1px;}
+.acthint{font-size:12px;color:var(--ink-3);margin-top:8px;display:none;}
+.soonband{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--tint),var(--blue-soft));border:1px dashed var(--line);border-radius:14px;padding:11px 16px;margin-top:12px;font-size:13px;color:var(--ink-2);}
+.soonband .ib{width:30px;height:30px;border-radius:9px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:15px;flex:none;}
+.soonband b{color:var(--ink);}
+.soonband .chip2{margin-left:auto;flex:none;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:var(--ink);color:#fff;padding:3px 10px;border-radius:20px;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+@media(max-width:760px){.grid{grid-template-columns:1fr;}.chip{min-width:44%;}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.hero,.chip,.soonband,.card{animation:fadeUp .45s ease both;}
+.chip:nth-child(2){animation-delay:.05s;}.chip:nth-child(3){animation-delay:.1s;}.chip:nth-child(4){animation-delay:.15s;}
+.grid .card:nth-child(2){animation-delay:.08s;}.grid .card:nth-child(3){animation-delay:.16s;}.grid .card:nth-child(4){animation-delay:.24s;}.grid .card:nth-child(5){animation-delay:.32s;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:0 2px 8px rgba(22,41,77,.05);transition:transform .18s ease,box-shadow .18s ease;}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(22,41,77,.10);}
+.chip{transition:transform .18s ease,box-shadow .18s ease;}
+.chip:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(22,41,77,.10);}
+.card.full{grid-column:1/-1;}
+.card h2{margin:0 0 12px;font-size:12.5px;font-weight:700;letter-spacing:.4px;color:var(--ink);display:flex;align-items:center;gap:10px;text-transform:uppercase;}
+.ic{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex:none;}
+.ic.cal{background:var(--accentbg);}.ic.rep{background:var(--greenbg);}.ic.unr{background:var(--amberbg);}.ic.pipe{background:#efeafc;}.ic.fu{background:var(--redbg);}
+.ct{margin-left:auto;background:var(--bg);color:var(--blue);font-size:11.5px;font-weight:700;padding:2px 10px;border-radius:20px;letter-spacing:0;}
+.row{padding:10px 0;border-bottom:1px solid var(--line);font-size:13.5px;line-height:1.45;}
+.row:last-child{border-bottom:none;}
+.row .t{font-weight:600;}
+.row .m{color:var(--mut);font-size:12px;margin-top:1px;}
+.time{display:inline-block;min-width:70px;font-weight:700;color:var(--blue);font-size:12.5px;}
+.pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px;letter-spacing:.2px;}
+.od{background:var(--redbg);color:var(--red);}
+.tod{background:var(--greenbg);color:var(--green);}
+.stage{font-size:10.5px;font-weight:600;color:#fff;background:var(--blue);padding:2px 9px;border-radius:20px;float:right;}
+.muted{color:var(--faint);font-size:12.5px;padding:4px 0;}
+.loading{color:var(--faint);font-style:italic;font-size:13px;padding:6px 0;}
+.err{color:var(--red);font-size:12.5px;}
+ul.todo{margin:0;padding-left:2px;list-style:none;}
+ul.todo li{font-size:13.5px;padding:8px 0;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;}
+ul.todo li:last-child{border-bottom:none;}
+.foot{margin-top:16px;text-align:center;color:var(--faint);font-size:11.5px;}
+</style>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;900&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<clipPath id="zxsl"><rect x="0" y="0" width="50" height="100"/></clipPath>
+<clipPath id="zxsr"><rect x="50" y="0" width="50" height="100"/></clipPath>
+<mask id="zxsx"><rect width="100" height="100" fill="#fff"/><path d="M32 30 L68 68 M68 30 L32 68" stroke="#000" stroke-width="9.5" stroke-linecap="square"/></mask>
+<symbol id="zxshield" viewBox="0 0 100 100">
+<g mask="url(#zxsx)">
+<path d="M50 8 L86 20 C86 52 74 76 50 92 C26 76 14 52 14 20 Z" fill="#0F2038" clip-path="url(#zxsl)"/>
+<path d="M50 8 L86 20 C86 52 74 76 50 92 C26 76 14 52 14 20 Z" fill="#1559D0" clip-path="url(#zxsr)"/>
+</g></symbol>
+</defs></svg>
+
+<header class="sxnav"><div class="sxnav-inner">
+  <span class="logo"><svg class="zxmark" viewBox="0 0 100 100" aria-hidden="true"><use href="#zxshield"/></svg><span class="wordmark">ZO<span class="wm-x">X</span>IRO</span></span>
+  <span class="right">CORE</span>
+</div></header>
+<div class="wrap">
+  <section class="sxhero"><div class="sxhero-in">
+    <span class="eyebrow">Morning Dashboard &middot; {{COMPANY_NAME}}<span class="livepill" id="livepill" title="Contacting your connectors."><span class="lvd"></span><span class="lvt">Connecting</span></span></span>
+    <h1 id="greet">Good morning</h1>
+    <p class="sub" id="datesub">&mdash;</p>
+  </div></section>
+
+  <div class="permbar" id="sfstale" style="display:none;background:#fff8e8;border-color:#eddba6;color:#6b4c07">
+    <span class="pb">&#9203;</span>
+    <span><b>Your automations are behind this build.</b> The scheduled jobs are still running
+    the instructions from build <b id="sfjb"></b>, but you have <b id="sfib"></b> installed.
+    Installing a new version never rewrites them &mdash; they have to be told.
+    Open a <b>new chat</b> and type <code class="sfcopy" id="sfphrase">refresh my scheduled tasks</code>
+    <span class="muted">(click to select)</span>.</span>
+  </div>
+  <div class="permbar" id="sfperm" style="display:none">
+    <span class="pb">&#9888;</span>
+    <span><b>This page has not been given access yet.</b> Nothing below is a real count &mdash;
+    every card failed to load, which is what a missing permission looks like, not an empty inbox.
+    Click <b>Allow</b> when prompted, then <b>Reload</b>. Updating this dashboard clears its access each time.</span>
+  </div>
+  <div class="chips">
+    <div class="chip"><div class="n" id="k-cal">&ndash;</div><div class="l">On your calendar</div></div>
+    <div class="chip"><div class="n" id="k-dr">&ndash;</div><div class="l">Replies to send</div></div>
+    <div class="chip"><div class="n" id="k-inb">&ndash;</div><div class="l">Unread to review</div></div>
+    <div class="chip warn"><div class="n" id="k-fu">&ndash;</div><div class="l">Waiting on you</div></div>
+  </div>
+
+  <div class="actrow">
+    <button class="actbtn" onclick="sfAway()"><span class="ab">&#9992;</span><span>Going away<small>Set up vacation updates</small></span></button>
+  </div>
+  <div id="sfpanel"></div>
+
+  <div class="soonband" id="bksoon" style="display:none">
+    <span class="ib">&#128202;</span>
+    <span><b>Bookkeeping</b> &mdash; monthly close, real-estate transaction categorization &amp; a CPA-ready year-end package.</span>
+    <span class="chip2">Coming soon</span>
+  </div>
+
+  <div class="grid">
+    <div class="card"><h2><span class="ic cal">&#128197;</span> Today's Calendar <span class="ct" id="cal-ct"></span></h2><div id="cal"><div class="loading">Loading your calendar&hellip;</div></div></div>
+    <div class="card"><h2><span class="ic rep">&#9993;</span> Replies to Send <span class="ct" id="dr-ct"></span></h2><div id="drafts"><div class="loading">Checking your drafts&hellip;</div></div></div>
+    <div class="card"><h2><span class="ic unr">&#128229;</span> Unread &mdash; Worth a Look <span class="ct" id="inb-ct"></span></h2><div id="inbox"><div class="loading">Scanning inbox&hellip;</div></div></div>
+    <div class="card full"><h2><span class="ic pipe">&#127968;</span> New Deals &mdash; ARV &amp; Max Offer <span class="ct" id="nd-ct"></span></h2><div id="newdeals"><div class="loading">Screening deals&hellip;</div></div>
+      <!-- Populate one row per deal from the deal-flow scan, sorted by Gap (best spread first).
+           NEVER collapse or truncate: five deals means five rows.
+           Columns: Property | Ask | ARV | Est. Rehab | MAO | Gap.
+           MAO = (ARV x buy_box.mao_percent) - Est. Rehab - buy_box.assignment_fee.
+           Under the table, one muted line, always: the ARV's web-comp sources, the
+           MAO % and fee used, and the rehab $/sqft band.
+           If the scan found nothing, show "No new deals in today's mail." -->
+    </div>
+    <div class="card full"><h2><span class="ic pipe">&#128201;</span> Second Look &mdash; Passed on Price <span class="ct" id="sl-ct"></span></h2><div id="secondlook"><div class="loading">Reading your pass ledger&hellip;</div></div></div>
+    <div class="card full"><h2><span class="ic fu">&#9873;</span> Follow-ups &mdash; People Waiting on You <span class="ct" id="fu-ct"></span></h2><div id="todo"><div class="loading">Working out who's waiting&hellip;</div></div></div>
+  </div>
+  <div class="foot">Live from your connected Calendar, Email &amp; CRM &middot; refreshes each time you open &middot; use the header Reload to update now &middot; Zoxiro {{PLUGIN_VERSION}}</div>
+</div>
+<script>
+var OWNER_NAME={{OWNER_NAME_JSON}};
+// Build stamps. INSTALLED_BUILD is this plugin's version, baked at generation time.
+// JOBS_BUILD is the version the scheduled task PROMPTS were last rewritten from — it
+// lives in the profile, not in the plugin, because a task's prompt text lives in the
+// scheduling platform and installing a new plugin does not touch it. When these two
+// disagree the automations are running old instructions, which is invisible from
+// everywhere else: the jobs still fire, still report success, and quietly apply
+// whatever rules shipped months ago. The user cannot be expected to remember a phrase
+// nobody told them, so the board says it.
+var INSTALLED_BUILD="{{PLUGIN_VERSION}}";
+var JOBS_BUILD="{{JOBS_BUILD}}";
+// ---- ACTION BUTTONS: real work in the widget, not a fake launcher --------------
+function sfPanel(html){var p=document.getElementById('sfpanel');p.innerHTML=html;p.style.display='block';try{p.scrollIntoView({behavior:'smooth',block:'nearest'});}catch(e){}}
+function sfRow(ok,label,detail){return '<div class="sfr"><span class="sfd '+(ok===true?'good':ok===false?'bad':'wait')+'"></span><span><b>'+esc(label)+'</b>'+(detail?' <span class="sfm">'+esc(detail)+'</span>':'')+'</span></div>';}
+// STAY IN THE APP. Do not link out to claude.ai — a URL-delivered prompt opens a new
+// browser session, triggers a sign-in and bot check, and shows a red "use caution" banner
+// because the text arrived from outside. Tested; it is worse than copying. Copy instead.
+function sfHand(phrase,intro){
+  var done=false;
+  if(navigator.clipboard&&navigator.clipboard.writeText){try{navigator.clipboard.writeText(phrase);done=true;}catch(e){}}
+  return '<div class="sfhand">'+esc(intro)+'<br><code>'+esc(phrase)+'</code>'+
+    '<span class="sfp">'+(done?'Copied \u2014 paste it in the chat box and press Enter.':'Type it in the chat box and press Enter.')+'</span></div>';
+}
+
+async function sfCheck(){
+  sfPanel('<div class="sfh">Checking your system…</div>');
+  var out=[], probes=[['Calendar',CAL,{startTime:new Date().toISOString().slice(0,10)+'T00:00:00',endTime:new Date(Date.now()+86400000).toISOString().slice(0,10)+'T00:00:00',timeZone:TZ,pageSize:1}],
+                     ['Email — drafts',DRAFTS,{pageSize:1,view:'DRAFT_VIEW_FULL'}],
+                     ['Email — inbox',THREADS,{query:'in:inbox',pageSize:1,view:'THREAD_VIEW_MINIMAL'}]];
+  if(CRM) probes.push(['CRM',CRM,{objectType:'deals',limit:1,properties:['dealname']}]);
+  for(var i=0;i<probes.length;i++){
+    var p=probes[i];
+    if(!p[1]){ out.push(sfRow(null,p[0],'not connected')); continue; }
+    try{ await call(p[1],p[2]); out.push(sfRow(true,p[0],'responding')); }
+    catch(e){ out.push(sfRow(false,p[0],'did NOT respond — reconnect it in Settings → Connectors')); }
+  }
+  var unread='';
+  try{ var r=await call(THREADS,{query:'in:inbox is:unread',pageSize:50,view:'THREAD_VIEW_MINIMAL'});
+       var n=(r.threads||[]).length; unread=sfRow(true,'Unread in inbox', n>=50?'50+':(''+n)); }catch(e){}
+  var bad=out.filter(function(s){return s.indexOf('bad')>-1;}).length;
+  var live=out.filter(function(s){return s.indexOf('good')>-1;}).length;
+  // Every probe failing is almost never simultaneous outages — it is this page lacking
+  // tool permission. Never accuse a healthy connector of being down.
+  if(live===0){
+    sfPanel('<div class="sfh">This page isn\u2019t allowed to check yet</div>'+
+      '<div class="sfn">Every call was refused, which points at <b>this page\u2019s permission</b> rather than your connectors \u2014 all of them failing at the same instant would be a remarkable coincidence. Click <b>Allow</b> on this dashboard, then <b>Reload</b>. A saved page loses its access grants every time it is updated, so this is normal right after an upgrade.</div>'+
+      sfHand('Audit my system','If it still fails after allowing, check properly from outside this page:'));
+    return;
+  }
+  sfPanel('<div class="sfh">'+(bad?'⚠ '+bad+' connector not responding':'✓ Connectors are alive')+'</div>'+out.join('')+unread+
+    '<div class="sfn">These are the checks a widget can run itself. Whether your morning jobs actually ran, whether the inbox is really draining and whether the queue is advancing need Drive and your task history — that is the full audit.</div>'+
+    sfHand('Audit my system','For the full seven-check audit, say this in the chat:'));
+}
+
+async function sfAway(){
+  sfPanel('<div class="sfh">Looking for your next trip…</div>');
+  var found=null;
+  if(CAL){
+    try{
+      var s=new Date(), e=new Date(Date.now()+60*86400000);
+      var r=await call(CAL,{startTime:s.toISOString().slice(0,10)+'T00:00:00',endTime:e.toISOString().slice(0,10)+'T00:00:00',timeZone:TZ,orderBy:'startTime',pageSize:50});
+      var evs=(r.events||[]).filter(function(x){return x.status!=='cancelled';});
+      for(var i=0;i<evs.length;i++){
+        var ev=evs[i], st=ev.start&&(ev.start.date||ev.start.dateTime), en=ev.end&&(ev.end.date||ev.end.dateTime);
+        if(!st||!en) continue;
+        var days=Math.round((new Date(en)-new Date(st))/86400000);
+        if(days>=3){ found={t:ev.summary||'(untitled)',s:st.slice(0,10),e:en.slice(0,10),d:days}; break; }
+      }
+    }catch(e){}
+  }
+  var head = found
+    ? '<div class="sfh">\u2708 Trip found: '+esc(found.t)+'</div>'+sfRow(true,found.s+' \u2192 '+found.e, found.d+' days')
+    : '<div class="sfh">\u2708 Going away</div>'+sfRow(null,'Nothing multi-day on your calendar in the next 60 days','');
+  var phrase = found ? ("I'm going on vacation from "+found.s+" to "+found.e) : "I'm going on vacation";
+  sfPanel(head+
+    '<div class="sfn"><b>While you are away you get two things, then they switch themselves off on the date you give.</b><br>'+
+    '<b>1. A daily summary</b> \u2014 anything time-sensitive first (a deadline, an expiring option, a seller who says they are talking to someone else), then new seller mail worth naming, what moved in the queue, and what is waiting on you.<br>'+
+    '<b>2. A daily all-clear</b> \u2014 one line confirming Zoxiro itself is still running. It sends even when everything is fine, because on holiday you would not notice silence.<br><br>'+
+    'Nothing is ever sent on your behalf \u2014 drafts only, same as always. A real problem breaks the pattern and reaches you immediately. Say "I\u2019m back" and both stop early.<br><br>'+
+    'Setting up the two scheduled tasks has to happen in the chat \u2014 a saved page cannot create them.</div>'+
+    sfHand(phrase,'To turn it on:'));
+}
+
+var BOOKKEEPING_INSTALLED={{BOOKKEEPING_INSTALLED}}; // unquoted true/false. false in this build -> shows the coming-soon bookkeeping band
+var CAL="{{CALENDAR_TOOL}}",DRAFTS="{{GMAIL_DRAFTS_TOOL}}",THREADS="{{GMAIL_THREADS_TOOL}}",CRM="{{CRM_SEARCH_TOOL}}";
+var DRIVE_SEARCH="{{DRIVE_SEARCH_TOOL}}",DRIVE_READ="{{DRIVE_READ_TOOL}}";
+var TZ=(Intl.DateTimeFormat().resolvedOptions().timeZone)||'America/New_York';
+var JUNK=/noreply|no-reply|notifications?@|messages-noreply|invitations@|updates-noreply|newsletters|digest|service\.|linkedin|tiktok|otter\.ai/i;
+if(!BOOKKEEPING_INSTALLED){document.getElementById('bksoon').style.display='flex';}
+// ---- LIVE INDICATOR ------------------------------------------------------------
+// The pill goes green ONLY when a connector has actually returned data, and it is
+// driven from inside call() so it can never disagree with the cards. Three states:
+// connecting (grey, no pulse) -> live (green, pulsing, stamped with the time) or
+// off (amber) when the first call fails. "Off" is not a cosmetic state: it is the
+// signal that the page needs its Allow prompt approved or a rebuild, which is the
+// one diagnosis that used to cost a week of reinstalling.
+var SF_LIVE='connecting';
+function sfNowShort(){try{return new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});}catch(e){return '';}}
+function sfPill(state,when){
+  var el=document.getElementById('livepill'); if(!el) return;
+  var t=state==='live'?'Live':state==='off'?'Not connected':state==='snap'?'Snapshot':'Connecting';
+  el.className='livepill'+(state==='live'?' is-live':state==='off'?' is-off':state==='snap'?' is-snap':'');
+  el.innerHTML='<span class="lvd"></span><span class="lvt">'+t+'</span>'+(when?'<span class="lvw"> &middot; '+esc(when)+'</span>':'');
+  el.title=state==='live'?('Reading your connectors now — numbers are current as of '+when+'. Use Reload to refresh.')
+    :state==='off'?'This page could not reach your connectors. Click Allow if asked, then Reload. If there is no prompt, the dashboard needs rebuilding — say "good morning" in a chat.'
+    :state==='snap'?'Frozen numbers. This page does not update and never will.'
+    :'Contacting your connectors.';
+  SF_LIVE=state;
+}
+function sfLiveOk(){ if(SF_LIVE!=='live'&&SF_LIVE!=='snap') sfPill('live',sfNowShort()); }
+function sfLiveFail(){ if(SF_LIVE==='connecting') sfPill('off'); }
+
+// ---- THE COUNT TILES MUST GO SOMEWHERE ------------------------------------------
+// They are the largest thing on the page, so they are the first thing anyone clicks.
+// Until 1.12.5 only the SNAPSHOT build linked them — the frozen page was clickable and
+// the LIVE one was not, which is precisely backwards: the live page is the one whose
+// numbers you can still act on. "Replies to send: 26" with nowhere to go is how an
+// account reaches 207 unsent drafts. The owner said it plainly: "when I click on the
+// tile like replies to send, it doesn't take me to the draft box on Gmail."
+var SF_CHIP_LINKS={
+  'k-cal':'https://calendar.google.com/calendar/r/day',
+  // The curated label, not #drafts: this is the list the admin job maintains, so it
+  // excludes replies to robots and is the one worth opening every morning.
+  'k-dr' :'https://mail.google.com/mail/u/0/#label/Zoxiro%2FAwaiting+Your+Reply',
+  'k-inb':'https://mail.google.com/mail/u/0/#search/is%3Aunread+in%3Ainbox',
+  'k-fu' :'https://mail.google.com/mail/u/0/#label/Zoxiro%2FAwaiting+Your+Reply'
+};
+function sfLinkChips(map){
+  Object.keys(map||{}).forEach(function(id){
+    var href=map[id]; if(!href) return;
+    var n=document.getElementById(id); if(!n) return;
+    var chip=n.closest?n.closest('.chip'):null; if(!chip||chip.querySelector('a.chiplink')) return;
+    var a=document.createElement('a');
+    a.className='chiplink'; a.href=href; a.target='_blank'; a.rel='noopener noreferrer';
+    while(chip.firstChild) a.appendChild(chip.firstChild);
+    chip.appendChild(a);
+  });
+}
+// Link them immediately — before any connector answers. A tile you cannot click while
+// the number is still loading teaches you it is not clickable, and you never try again.
+try{ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',function(){sfLinkChips(SF_CHIP_LINKS);});} else {sfLinkChips(SF_CHIP_LINKS);} }catch(e){}
+async function call(name,args){
+  var r;
+  try{ r=await window.cowork.callMcpTool(name,args); }
+  catch(e){ sfLiveFail(); throw e; }
+  if(r&&r.isError){ sfLiveFail(); throw new Error('e'); }
+  sfLiveOk();
+  try{return r.structuredContent ?? JSON.parse(r.content[0].text);}catch(e){return r.structuredContent||{};}}
+function esc(s){return (s||'').replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+function ageDays(d){return Math.floor((Date.now()-new Date(d).getTime())/86400000);}
+function fmtAge(n){return n<=0?'today':n===1?'1 day':n+' days';}
+// Not every draft carries plaintextBody - some arrive with htmlBody only, so a
+// body test that reads plaintextBody alone is blind on those. Fall back.
+function draftBody(d){return (d.plaintextBody || (d.htmlBody||'').replace(/<[^>]*>/g,' ') || '');}
+function noRecipient(d){return !((d.toRecipients||[]).join(' ')).trim();}
+function realDraft(d){var to=(d.toRecipients||[]).join(' ');if(!to.trim())return false;if(JUNK.test(to))return false;var b=draftBody(d).replace(/[-\s]/g,'');if(b.length<12&&!(d.subject||'').trim())return false;return true;}
+function dTo(d){return esc((d.toRecipients||['(no recipient)'])[0].replace(/<.*>/,'').replace(/"/g,'').trim());}
+function setK(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
+// A count chip left at its placeholder reads as zero. On failure say so instead.
+var SFPROBES=0, SFFAILS=0;
+function sfFail(chipId,ctId){
+  SFPROBES++; SFFAILS++;
+  var el=document.getElementById(chipId);
+  if(el){el.textContent='!';el.title='Could not load - this is not a zero';}
+  if(ctId) setK(ctId,'!');
+  sfMaybeBanner();
+}
+function sfOk(){SFPROBES++;sfMaybeBanner();}
+// Every probe failing at once is almost never four simultaneous outages. It is
+// this page having lost its tool access, which happens every time the artifact
+// is updated. Name that instead of blaming the connectors one by one.
+function sfMaybeBanner(){
+  if(SFPROBES<4) return;
+  var b=document.getElementById('sfperm');
+  if(!b) return;
+  b.style.display = (SFFAILS>=4) ? 'flex' : 'none';
+}
+(function(){
+  if(!JOBS_BUILD||!INSTALLED_BUILD||JOBS_BUILD===INSTALLED_BUILD) return;
+  var b=document.getElementById('sfstale'); if(!b) return;
+  setK('sfjb',JOBS_BUILD); setK('sfib',INSTALLED_BUILD);
+  b.style.display='flex';
+  var c=document.getElementById('sfphrase');
+  if(c) c.addEventListener('click',function(){
+    var r=document.createRange(); r.selectNodeContents(c);
+    var sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  });
+})();
+(function(){var n=new Date(),h=n.getHours();setK('greet',(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+(OWNER_NAME?', '+OWNER_NAME:''));setK('datesub',n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}));})();
+(async function(){var el=document.getElementById('cal');if(!CAL){el.innerHTML='<div class="muted">Connect your calendar to see today\'s schedule.</div>';setK('cal-ct','');setK('k-cal','&ndash;');return;}
+ try{var n=new Date(),p=function(x){return String(x).padStart(2,'0');};var ds=n.getFullYear()+'-'+p(n.getMonth()+1)+'-'+p(n.getDate());var e=new Date(n.getTime()+864e5),de=e.getFullYear()+'-'+p(e.getMonth()+1)+'-'+p(e.getDate());
+ var r=await call(CAL,{startTime:ds+'T00:00:00',endTime:de+'T00:00:00',timeZone:TZ,orderBy:'startTime',pageSize:25});var evs=(r.events||[]).filter(function(x){return x.status!=='cancelled';});
+ setK('cal-ct',evs.length);setK('k-cal',evs.length);sfOk();if(!evs.length){el.innerHTML='<div class="muted">No events today &mdash; open runway.</div>';return;}
+ el.innerHTML=evs.map(function(ev){var st=(ev.start&&ev.start.dateTime)?new Date(ev.start.dateTime).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}):'all day';return '<div class="row"><span class="time">'+st+'</span> <span class="t">'+esc(ev.summary||'(no title)')+'</span></div>';}).join('');
+ }catch(e){sfFail('k-cal','cal-ct');el.innerHTML='<div class="err">Couldn\'t load your calendar &mdash; this is not "no events". Click Allow if asked, then Reload.</div>';}})();
+(async function(){var el=document.getElementById('drafts');if(!DRAFTS){el.innerHTML='<div class="muted">Connect your email to see reply drafts.</div>';setK('dr-ct','');setK('k-dr','&ndash;');return;}
+ try{var r=await call(DRAFTS,{pageSize:50,view:'DRAFT_VIEW_FULL'});var all=r.drafts||[];var real=all.filter(realDraft).sort(function(a,b){return new Date(a.date)-new Date(b.date);});
+ setK('dr-ct',real.length);setK('k-dr',real.length);sfOk();if(!real.length){el.innerHTML='<div class="muted">No real replies waiting &mdash; caught up.</div>';return;}
+ var stranded=all.filter(function(d){return noRecipient(d)&&((d.subject||'').trim()||draftBody(d).trim().length>12);});
+ el.innerHTML=real.map(function(d){var a=ageDays(d.date),od=a>2;return '<div class="row"><span class="t">'+esc(d.subject||'(no subject)')+'</span>'+(od?' <span class="pill od">'+a+'d</span>':' <span class="pill tod">'+fmtAge(a)+'</span>')+'<div class="m">To: '+dTo(d)+'</div></div>';}).join('')+
+   (stranded.length?'<div class="muted" style="margin-top:6px">'+stranded.length+' more '+(stranded.length===1?'draft has':'drafts have')+' no recipient filled in, so '+(stranded.length===1?'it':'they')+' cannot send.</div>':'')+
+   // THESE ARE WRITTEN AND NOT SENT, AND THAT IS THE WHOLE PROBLEM. A count with no way
+   // to act on it reads as a status line, and a status line is something you scroll past.
+   // One live account reached 207 unsent drafts while its owner answered the same mail by
+   // hand, never knowing the replies existed. The card now ends in the door to them.
+   '<a class="sendlink" href="https://mail.google.com/mail/u/0/#label/Zoxiro%2FAwaiting+Your+Reply" target="_blank" rel="noopener noreferrer">'+
+   'Open and send '+(real.length===1?'it':'them')+' &rarr;</a>'+
+   '<div class="sendnote">Written, not sent. Nothing sends these but you.</div>';
+ }catch(e){sfFail('k-dr','dr-ct');el.innerHTML='<div class="err">Couldn\'t load your drafts &mdash; this is not "no replies waiting". Click Allow if asked, then Reload.</div>';}})();
+(async function(){var el=document.getElementById('inbox');if(!THREADS){el.innerHTML='<div class="muted">Connect your email to see unread worth a look.</div>';setK('inb-ct','');setK('k-inb','&ndash;');return;}
+ try{var r=await call(THREADS,{query:'in:inbox is:unread newer_than:3d -category:promotions -category:social',pageSize:12,view:'THREAD_VIEW_MINIMAL'});var th=r.threads||[];
+ setK('inb-ct',th.length);setK('k-inb',th.length);sfOk();if(!th.length){el.innerHTML='<div class="muted">No fresh unread worth flagging.</div>';return;}
+ el.innerHTML=th.slice(0,8).map(function(t){var m=(t.messages&&t.messages[0])||{};var s=esc((m.subject||m.snippet||'(no subject)')).slice(0,90);var f=esc((m.sender||'').replace(/<.*>/,'').replace(/"/g,'').trim()).slice(0,40);return '<div class="row"><span class="t">'+s+'</span>'+(f?'<div class="m">'+f+'</div>':'')+'</div>';}).join('');
+ }catch(e){sfFail('k-inb','inb-ct');el.innerHTML='<div class="err">Couldn\'t load your inbox &mdash; this is not "nothing unread". Click Allow if asked, then Reload.</div>';}})();
+(async function(){var el=document.getElementById('todo');if(!DRAFTS){el.innerHTML='<div class="muted">Connect your email to surface who\'s waiting on you.</div>';setK('fu-ct','');setK('k-fu','&ndash;');return;}
+ try{var r=await call(DRAFTS,{pageSize:50,view:'DRAFT_VIEW_FULL'});var real=(r.drafts||[]).filter(realDraft).sort(function(a,b){return new Date(a.date)-new Date(b.date);});
+ if(!real.length){setK('fu-ct','0');setK('k-fu','0');sfOk();el.innerHTML='<div class="muted">Nobody\'s waiting &mdash; all caught up.</div>';return;}
+ var overdue=real.filter(function(d){return ageDays(d.date)>2;});var list=(overdue.length?overdue:real).slice(0,6);
+ setK('fu-ct',(overdue.length?overdue.length+' overdue':real.length));setK('k-fu',overdue.length);sfOk();
+ el.innerHTML='<ul class="todo">'+list.map(function(d){var a=ageDays(d.date);return '<li><span class="pill '+(a>2?'od':'tod')+'">'+fmtAge(a)+'</span> <span><b>'+esc(d.subject||'(no subject)')+'</b> &mdash; to '+dTo(d)+'</span></li>';}).join('')+'</ul>'+(overdue.length?'<div class="muted" style="margin-top:6px">Send the '+overdue.length+' overdue first &mdash; longest waiters.</div>':'');
+ }catch(e){sfFail('k-fu','fu-ct');el.innerHTML='<div class="err">Couldn\'t build follow-ups &mdash; this is not "nobody waiting". Click Allow if asked, then Reload.</div>';}})();
+// ---- SECOND LOOK: a PASS is priced, not dead ----------------------------------
+// Reads pass-ledger.csv from Drive. Every deal the underwriter passed on is logged
+// there with the price it would have to reach. This card does the subtraction; it does
+// not fetch live prices (that is the weekly Second Look pass's work).
+function slCells(L){var out=[],cur='',q=false;for(var j=0;j<L.length;j++){var ch=L[j];if(ch==='"'){q=!q;continue;}if(ch===','&&!q){out.push(cur);cur='';continue;}cur+=ch;}out.push(cur);return out;}
+function slParse(txt){
+  var slLines=(txt||'').split(/\r?\n/).filter(function(l){return l.trim().length;});
+  if(slLines.length<2) return [];
+  var slHead=slCells(slLines[0]).map(function(h){return h.trim();}), rows=[];
+  for(var i=1;i<slLines.length;i++){var c=slCells(slLines[i]),o={};for(var k=0;k<slHead.length;k++){o[slHead[k]]=(c[k]||'').trim();}rows.push(o);}
+  return rows;
+}
+function slNum(v){var n=parseFloat(String(v==null?'':v).replace(/[^0-9.\-]/g,''));return isFinite(n)?n:null;}
+function slUsd(n){return '$'+Math.round(n).toLocaleString();}
+(async function(){
+  var el=document.getElementById('secondlook');
+  if(!el) return;
+  if(!DRIVE_SEARCH||!DRIVE_READ){el.innerHTML='<div class="muted">Connect Google Drive and this fills in with the deals you passed on and what they would have to cost.</div>';setK('sl-ct','');return;}
+  try{
+    var f=await call(DRIVE_SEARCH,{query:"title = 'pass-ledger.csv'",pageSize:5});
+    var files=(f.files||[]).slice().sort(function(a,b){return new Date(b.modifiedTime||b.createdTime)-new Date(a.modifiedTime||a.createdTime);});
+    if(!files.length){el.innerHTML='<div class="muted">No pass ledger yet. From now on every deal the underwriter passes on is logged with the price it would have to hit &mdash; this fills in after your next underwriting run.</div>';setK('sl-ct','');return;}
+    var c=await call(DRIVE_READ,{fileId:files[0].id});
+    var rows=slParse(c.fileContent||'');
+    var slLive=rows.filter(function(r){return (r.rescreen||'')==='eligible' && (r.status||'active')!=='dead';});
+    if(!slLive.length){el.innerHTML='<div class="muted">Nothing here a price cut could fix. Passes killed by flood risk, age, auction or a failed refi test stay dead at any price, so they are not tracked.</div>';setK('sl-ct','0');return;}
+    slLive.forEach(function(r){
+      var cp=slNum(r.current_price); if(cp==null) cp=slNum(r.price_when_screened);
+      var m=slNum(r.mao);
+      r._cp=cp; r._mao=m; r._gap=(cp!=null&&m!=null)?(cp-m):null;
+    });
+    var withGap=slLive.filter(function(r){return r._gap!=null;}).sort(function(a,b){return a._gap-b._gap;});
+    var inRange=withGap.filter(function(r){return r._gap<=0;});
+    setK('sl-ct', slLive.length+' watching'+(inRange.length?' \u00b7 '+inRange.length+' in range':''));
+    var show=(inRange.length?inRange:withGap).slice(0,8);
+    if(!show.length){el.innerHTML='<div class="muted">'+slLive.length+' passed deals tracked, but none carry a stored offer price yet.</div>';return;}
+    el.innerHTML=show.map(function(r){
+      return '<div class="row"><span class="t">'+esc(r.address||'(no address)')+'</span><span class="stage">'+
+        (r._gap<=0?'in range':slUsd(r._gap)+' to go')+'</span></div>';
+    }).join('')+
+    '<div class="muted" style="margin-top:6px">'+(inRange.length?
+      'At or below the price that made these work. Re-underwrite before you call &mdash; a stored offer price ages.':
+      'Smallest gap first &mdash; the ask has to come down by the amount shown.')+
+    ' Say <b>second look</b> in the chat to re-check the whole pile against today\'s prices.</div>';
+  }catch(e){ el.innerHTML='<div class="err">Couldn\'t read your pass ledger.</div>'; setK('sl-ct',''); }
+})();
+</script>
+</body></html>

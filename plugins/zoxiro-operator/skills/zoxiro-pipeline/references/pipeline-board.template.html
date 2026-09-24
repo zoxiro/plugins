@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<!-- Zoxiro Pipeline Board — PERSISTED ARTIFACT. Generate per user, record the id in the
+     profile as `pipeline_board_artifact`, and UPDATE that id later rather than creating a
+     second one.
+     Substitute {{COMPANY_NAME}}, {{DRIVE_SEARCH_TOOL}}, {{DRIVE_READ_TOOL}},
+     {{PLUGIN_VERSION}}, and optionally {{SNAPSHOT_JSON}} / {{SNAPSHOT_AS_OF}}.
+     DECLARE the Drive tools in mcpTools below — an empty array is why the page is never
+     offered a permission grant and fails with "tool refused".
+     Columns come from what the underwriter CONCLUDED (verdict), not the queue status —
+     "Processed" otherwise lumps a deal killed on margin together with a live conditional. -->
+<script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Zoxiro Pipeline Board",
+  "schemaVersion": 1,
+  "description": "Live deal board for {{COMPANY_NAME}}. Re-reads the newest underwrite-queue.csv from the Zoxiro folder in Drive every time it opens. Columns come from what the underwriter CONCLUDED - needs comps, watch, buy, passed - not just whether it has run. KPIs: still live, total asked, worth your time, need comps, killed on the numbers.",
+  "mcpTools": ["mcp__Google_Drive__search_files", "mcp__Google_Drive__read_file_content"],
+  "mcpServerNames": ["Google_Drive"]
+}
+</script>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Zoxiro Deal Pipeline</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect width='100' height='100' fill='white'/%3E%3Cpath d='M32 30 L68 68 M68 30 L32 68' stroke='black' stroke-width='9.5' stroke-linecap='square'/%3E%3C/mask%3E%3CclipPath id='l'%3E%3Crect width='50' height='100'/%3E%3C/clipPath%3E%3CclipPath id='r'%3E%3Crect x='50' width='50' height='100'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg mask='url(%23m)'%3E%3Cpath d='M50 8 L86 20 C86 52 74 76 50 92 C26 76 14 52 14 20 Z' fill='%230F2038' clip-path='url(%23l)'/%3E%3Cpath d='M50 8 L86 20 C86 52 74 76 50 92 C26 76 14 52 14 20 Z' fill='%231559D0' clip-path='url(%23r)'/%3E%3C/g%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>h1,h2,h3{font-family:var(--display);letter-spacing:-.01em;}
+:root{color-scheme:light;--white:#ffffff;--tint:#f4f6fb;--tint-2:#eaeff8;--ink:#16202e;--ink-2:#4d5867;--ink-3:#7d879a;--line:#e2e8f2;--blue:#2b7ffd;--blue-2:#4da0ff;--blue-deep:#1a5fd0;--blue-soft:#eaf2ff;--navy:#0b1424;--navy-2:#111d31;--radius:12px;--radius-sm:8px;--font:'Lato','Segoe UI',system-ui,-apple-system,sans-serif;--display:'Archivo','Lato',system-ui,sans-serif;--navy2:#111d31;--mut:#4d5867;--faint:#7d879a;--card:#ffffff;--bg:#f4f6fb;--accentbg:#eaf2ff;--green:#137a4b;--greenbg:#e7f6ee;--amber:#8a5d00;--amberbg:#fbf1da;--red:#c0392b;--redbg:#fcece9;--col:#f4f6fb;}
+*{box-sizing:border-box;}
+body{margin:0;font-family:var(--font);color:var(--ink);background:transparent;-webkit-font-smoothing:antialiased;}
+.wrap{padding:18px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.kpis,.col{animation:fadeUp .45s ease both;}
+.board .col:nth-child(2){animation-delay:.06s;}.board .col:nth-child(3){animation-delay:.12s;}.board .col:nth-child(4){animation-delay:.18s;}.board .col:nth-child(5){animation-delay:.24s;}.board .col:nth-child(6){animation-delay:.3s;}
+.sxnav{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);margin:-18px -18px 0;}
+.sxnav .logo{display:flex;align-items:center;gap:10px;width:auto;height:auto;background:none;border-radius:0;overflow:visible;font-size:inherit;}
+.sxnav .logo>svg{width:28px;height:28px;flex:0 0 28px;}
+.sxnav-inner{max-width:1400px;margin:0 auto;padding:11px 18px;display:flex;align-items:center;gap:14px;}
+.wordmark{font-family:'Archivo',var(--font);font-weight:700;font-size:.95rem;letter-spacing:.13em;color:var(--ink);white-space:nowrap;display:inline-flex;align-items:center;}
+.wm-x{color:#1559D0}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){.wm-x{background:linear-gradient(90deg,var(--ink) 0 50%,#1559D0 50%);-webkit-background-clip:text;background-clip:text;color:transparent}}
+.sxnav .right{margin-left:auto;font-size:.74rem;color:var(--ink-3);font-weight:900;letter-spacing:.1em;}
+.sxhero{background:linear-gradient(180deg,#f7faff 0%,#ffffff 62%);border-bottom:1px solid var(--line);margin:0 -18px 16px;}
+.sxhero-in{max-width:1400px;margin:0 auto;padding:30px 18px 24px;display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap;}
+.eyebrow{display:block;font-size:.76rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:var(--blue);margin-bottom:8px;}
+.sxhero h1{font-family:var(--display);font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.15;letter-spacing:-.015em;margin:0;}
+.sxhero .sub{margin-left:auto;font-size:.95rem;color:var(--ink-2);}
+.sxhero .sub b{font-family:var(--display);font-size:1.25rem;color:var(--ink);}
+.kpis{display:flex;gap:10px;margin:0 0 14px;flex-wrap:wrap;}
+.kpi{flex:1;min-width:110px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 14px;box-shadow:0 2px 6px rgba(22,41,77,.05);transition:transform .18s ease,box-shadow .18s ease;}
+.kpi:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(22,41,77,.10);}
+.kpi .n{font-size:22px;font-weight:700;line-height:1;color:var(--navy);}
+.kpi .l{font-size:10.5px;color:var(--mut);margin-top:5px;text-transform:uppercase;letter-spacing:.4px;}
+.kpi.good .n{color:var(--green);}
+.kpi.warn .n{color:var(--red);}
+.board{display:flex;gap:14px;overflow-x:auto;padding-bottom:10px;}
+.col{flex:0 0 250px;background:var(--col);border:1px solid var(--line);border-radius:14px;padding:0 0 10px;overflow:hidden;}
+.col .top{border-top:3px solid var(--sc);padding:12px 13px 8px;}
+.col h2{margin:0;font-size:12px;font-weight:700;letter-spacing:.4px;color:var(--ink);text-transform:uppercase;display:flex;align-items:center;gap:6px;}
+.col h2 .ct{margin-left:auto;background:#fff;color:var(--sc);font-size:11px;font-weight:700;padding:1px 9px;border-radius:20px;border:1px solid var(--line);}
+.col .val{font-size:11.5px;color:var(--mut);margin-top:4px;font-weight:600;min-height:15px;}
+.col .body{padding:4px 10px 0;}
+.deal{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--sc);border-radius:10px;padding:10px 12px;margin-bottom:9px;box-shadow:0 1px 3px rgba(22,41,77,.05);transition:transform .16s ease,box-shadow .16s ease;}
+.deal:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(22,41,77,.12);}
+.deal .hd{display:flex;align-items:flex-start;gap:6px;}
+.deal .dn{font-weight:600;font-size:13px;line-height:1.35;flex:1;}
+.deal .score{flex:none;font-size:10px;font-weight:800;border-radius:20px;padding:2px 8px;letter-spacing:.3px;}
+.sA{background:var(--greenbg);color:var(--green);}
+.sB{background:#eaf1fb;color:var(--blue);}
+.sC{background:var(--amberbg);color:var(--amber);}
+.deal .amt{color:var(--sc);font-weight:700;font-size:12.5px;margin-top:4px;}
+.deal .src{display:inline-block;font-size:10px;font-weight:600;color:var(--mut);background:var(--col);border:1px solid var(--line);border-radius:20px;padding:1px 8px;margin-top:6px;}
+.deal .na{font-size:11.5px;color:var(--mut);margin-top:6px;line-height:1.4;}
+.deal .na b{color:var(--ink);font-weight:600;}
+.deal .na.due{color:var(--red);}
+.empty{color:var(--faint);font-size:12px;font-style:italic;padding:8px 2px;}
+.muted{color:var(--faint);font-size:13px;padding:10px 2px;}
+.err{color:var(--red);font-size:12.5px;padding:10px 2px;}
+.loading{color:var(--faint);font-style:italic;font-size:13px;padding:10px 2px;}
+.foot{margin-top:8px;text-align:center;color:var(--faint);font-size:11.5px;}
+</style>
+</head>
+<body>
+
+<!-- Shared by BOTH tiers: Core draws the shield in its hero, Operator in
+     its nav bar. Keep this outside every TIER block or one tier gets a
+     <use> pointing at a symbol that was stripped out from under it. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<clipPath id="zxsl"><rect x="0" y="0" width="50" height="100"/></clipPath>
+<clipPath id="zxsr"><rect x="50" y="0" width="50" height="100"/></clipPath>
+<mask id="zxsx"><rect width="100" height="100" fill="#fff"/><path d="M32 30 L68 68 M68 30 L32 68" stroke="#000" stroke-width="9.5" stroke-linecap="square"/></mask>
+<symbol id="zxshield" viewBox="0 0 100 100">
+<g mask="url(#zxsx)">
+<path d="M50 8 L86 20 C86 52 74 76 50 92 C26 76 14 52 14 20 Z" fill="#0F2038" clip-path="url(#zxsl)"/>
+<path d="M50 8 L86 20 C86 52 74 76 50 92 C26 76 14 52 14 20 Z" fill="#1559D0" clip-path="url(#zxsr)"/>
+</g></symbol>
+</defs></svg>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;900&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<header class="sxnav"><div class="sxnav-inner">
+  <span class="logo"><svg class="zxmark" viewBox="0 0 100 100" aria-hidden="true"><use href="#zxshield"/></svg><span class="wordmark">ZO<span class="wm-x">X</span>IRO</span></span>
+  <span class="right">PIPELINE</span>
+</div></header>
+<div class="wrap">
+  <section class="sxhero"><div class="sxhero-in">
+    <div><span class="eyebrow">Pipeline Board &middot; {{COMPANY_NAME}}</span>
+    <h1>Every deal, and what the numbers said</h1></div>
+    <span class="sub" id="sub"></span>
+  </div></section>
+  <div class="kpis" id="kpis" style="display:none"></div>
+  <div id="board" class="board"><div class="loading">Loading your pipeline&hellip;</div></div>
+  <div class="foot" id="srcnote">Live from your underwrite queue in Drive &middot; refreshes each time you open &middot; Zoxiro Pipeline Board {{PLUGIN_VERSION}}</div>
+</div>
+<script>
+var DRIVE_SEARCH="{{DRIVE_SEARCH_TOOL}}";
+var DRIVE_READ="{{DRIVE_READ_TOOL}}";
+var QUEUE_FILE="underwrite-queue.csv";
+var SNAPSHOT={{SNAPSHOT_JSON}};   // "" on a fresh build. The generator may bake the
+                                   // current queue here so the board still renders if the
+                                   // page has not been granted Drive access. NEVER ship one
+                                   // user's deals in another user's build.
+var SNAPSHOT_AS_OF="{{SNAPSHOT_AS_OF}}";
+// Live Drive first; if the page has not been granted access, fall back to this
+// baked snapshot rather than rendering an error. Same pattern as the leaderboard.
+
+var STAGES=["New","Needs comps","Watch \u2014 conditional","Buy","Offer Out","Under Contract","Closed","Passed"];
+var PALETTE=["#2b7ffd","#1a5fd0","#4da0ff","#137a4b","#8a5d00","#b03a5b","#4d5867"];
+function esc(s){return (s||'').replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+function money(n){n=Number(n);if(!n)return '';return '$'+Math.round(n).toLocaleString();}
+async function call(name,args){var r=await window.cowork.callMcpTool(name,args);if(r&&r.isError)throw new Error(r.error||'tool refused');try{return r.structuredContent ?? JSON.parse(r.content[0].text);}catch(e){return r.structuredContent||{};}}
+function parseCSV(txt){
+  var rows=[],row=[],cur='',q=false;
+  for(var i=0;i<txt.length;i++){
+    var c=txt[i];
+    if(q){
+      if(c==='"'){ if(txt[i+1]==='"'){cur+='"';i++;} else {q=false;} }
+      else cur+=c;
+    } else {
+      if(c==='"') q=true;
+      else if(c===','){ row.push(cur); cur=''; }
+      else if(c==='\n'){ row.push(cur); rows.push(row); row=[]; cur=''; }
+      else if(c==='\r'){ }
+      else cur+=c;
+    }
+  }
+  if(cur.length||row.length){ row.push(cur); rows.push(row); }
+  return rows.filter(function(r){return r.join('').trim().length;});
+}
+function firstSentence(t){
+  t=(t||'').trim(); if(!t) return '';
+  var m=t.match(/^[^.]{0,180}\./); return (m?m[0]:t.slice(0,160)).trim();
+}
+(async function(){
+ var bd=document.getElementById('board');
+ // No early return here. A page with no tool bridge must still render the snapshot —
+ // bailing out was the whole reason the fallback never showed.
+ var noBridge = !(window.cowork && window.cowork.callMcpTool);
+ try{
+  var rows=null, fromDrive=false, why='';
+  try{
+    if(noBridge) throw new Error('this page has not been granted tool access');
+    var f=await call(DRIVE_SEARCH,{query:"title = '"+QUEUE_FILE+"'",pageSize:10});
+    var files=(f.files||[]).slice().sort(function(a,b){return new Date(b.modifiedTime||b.createdTime)-new Date(a.modifiedTime||a.createdTime);});
+    if(files.length){
+      var c=await call(DRIVE_READ,{fileId:files[0].id});
+      rows=parseCSV(c.fileContent||''); fromDrive=true;
+    }
+  }catch(e){ why=String((e&&e.message)||e); }
+  if((!rows||rows.length<2) && SNAPSHOT){ rows=parseCSV(SNAPSHOT); fromDrive=false; }
+  if(!rows||rows.length<2){ bd.innerHTML='<div class="muted">No underwrite queue reachable yet. If this page was just updated, click <b>Allow</b> then <b>Reload</b>. Deals appear here once the deal-flow scan queues one.</div>'; return; }
+  if(rows.length<2){bd.innerHTML='<div class="muted">Your queue is empty &mdash; nothing waiting to underwrite.</div>';return;}
+  var hdr=rows[0].map(function(h){return h.trim().toLowerCase();});
+  function col(n){return hdr.indexOf(n);}
+  var iAddr=col('address'),iMkt=col('market'),iAsk=col('ask'),iArv=col('est arv'),
+      iReh=col('est rehab'),iSpr=col('est spread'),iSrc=col('source'),iSt=col('queue status'),iDt=col('date added');
+  function derive(status,verdict){
+    // The queue's own status says only whether the underwriter has run. What the owner
+    // needs to see is what it CONCLUDED, so read the verdict first and fall back.
+    if(/^\s*WATCH/i.test(verdict)) return 'Watch \u2014 conditional';
+    if(/^\s*(PASS|WALK)/i.test(verdict)) return 'Passed';
+    if(/^\s*BUY/i.test(verdict)) return 'Buy';
+    if(/PENDING/i.test(verdict)) return 'Needs comps';
+    return (status||'Other').trim();
+  }
+  var deals=rows.slice(1).map(function(r){
+    var verdict=(r[iSpr]||'').trim();
+    return {name:(r[iAddr]||'').trim(), stage:derive(r[iSt],verdict), raw:(r[iSt]||'').trim(),
+            amount:Number(String(r[iAsk]||'').replace(/[^0-9.]/g,''))||0,
+            market:(r[iMkt]||'').trim(), src:(r[iSrc]||'').trim().replace(/\s*\(.*$/,''),
+            na:firstSentence(verdict),
+            killed:/^\s*(PASS|WALK)/i.test(verdict), pending:/PENDING/i.test(verdict),
+            watch:/^\s*WATCH/i.test(verdict), buy:/^\s*BUY/i.test(verdict),
+            added:(r[iDt]||'').trim()};
+  }).filter(function(d){return d.name;});
+  if(!deals.length){bd.innerHTML='<div class="muted">Your queue is empty &mdash; nothing waiting to underwrite.</div>';return;}
+  var known={};STAGES.forEach(function(s){known[s.toLowerCase()]=s;});
+  var cols=STAGES.filter(function(s){return deals.some(function(d){return d.stage.toLowerCase()===s.toLowerCase();});});
+  if(deals.some(function(d){return !known[d.stage.toLowerCase()];})) cols=cols.concat(['Other']);
+  var gv=deals.reduce(function(a,d){return a+d.amount;},0);
+  document.getElementById('sub').innerHTML='<b>'+deals.length+'</b> in queue &middot; '+(gv?money(gv)+' asked':'&mdash;');
+  var pend=deals.filter(function(d){return d.pending;}).length;
+  var kill=deals.filter(function(d){return d.killed;}).length;
+  var watch=deals.filter(function(d){return d.watch||d.buy;}).length;
+  var live=deals.length-kill;
+  var k=document.getElementById('kpis');k.style.display='flex';
+  k.innerHTML='<div class="kpi"><div class="n">'+live+'</div><div class="l">Still live</div></div>'+
+   '<div class="kpi"><div class="n">'+(gv?money(gv):'&ndash;')+'</div><div class="l">Total asked</div></div>'+
+   '<div class="kpi good"><div class="n">'+watch+'</div><div class="l">Worth your time</div></div>'+
+   '<div class="kpi warn"><div class="n">'+pend+'</div><div class="l">Need comps before offer</div></div>'+
+   '<div class="kpi"><div class="n">'+kill+'</div><div class="l">Killed on the numbers</div></div>';
+  var srcNote=document.getElementById('srcnote');
+  if(srcNote){ srcNote.innerHTML = fromDrive
+    ? 'Live from your underwrite queue in Drive.'
+    : 'Showing a saved snapshot from '+SNAPSHOT_AS_OF+' \u2014 this page has not been granted Drive access yet, so it cannot refresh. Click <b>Allow</b> then <b>Reload</b> for live data.'+(why?' <span style="opacity:.7">('+esc(why)+')</span>':''); }
+  bd.innerHTML=cols.map(function(st,i){
+    var c2=PALETTE[i%PALETTE.length];
+    var list=deals.filter(function(d){return st==='Other'?!known[d.stage.toLowerCase()]:d.stage.toLowerCase()===st.toLowerCase();});
+    var sum=list.reduce(function(a,d){return a+d.amount;},0);
+    var cards=list.length?list.map(function(d){
+      var badge=d.buy?'<span class="score sA">BUY</span>':
+                d.watch?'<span class="score sB">WATCH</span>':
+                d.pending?'<span class="score sB">VERIFY</span>':
+                d.killed?'<span class="score sC">PASS</span>':'';
+      return '<div class="deal" style="--sc:'+c2+'">'+
+        '<div class="hd"><div class="dn">'+esc(d.name)+'</div>'+badge+'</div>'+
+        (d.amount?'<div class="amt" style="--sc:'+c2+'">'+money(d.amount)+' ask</div>':'')+
+        (d.market?'<span class="src">'+esc(d.market)+'</span>':'')+
+        (d.src?' <span class="src">'+esc(d.src)+'</span>':'')+
+        (d.na?'<div class="na'+(d.killed?' due':'')+'"><b>Verdict:</b> '+esc(d.na)+'</div>':'')+
+      '</div>';}).join(''):'<div class="empty">Nothing here.</div>';
+    return '<div class="col" style="--sc:'+c2+'"><div class="top"><h2>'+esc(st)+'<span class="ct" style="--sc:'+c2+'">'+list.length+'</span></h2><div class="val">'+(sum?money(sum)+' asked':'&nbsp;')+'</div></div><div class="body">'+cards+'</div></div>';
+  }).join('');
+ }catch(e){
+  bd.innerHTML='<div class="err">Couldn\'t render the board at all: '+esc(String((e&&e.message)||e)).slice(0,140)+'</div>';
+ }
+})();
+</script>
+</body></html>

@@ -1,0 +1,20 @@
+{
+  "name": "zoxiro-operator",
+  "version": "1.14.47",
+  "author": {
+    "name": "Rae Allen"
+  },
+  "license": "Proprietary",
+  "description": "(build 1.14.47) Zoxiro Operator — The Operating Platform for Real Estate Investors. Adds deal Sourcing (lead lists, buy-box ranking, outreach prep), institutional 9-step Underwriting with Excel models, and a self-auditing health check to the Core back office.",
+  "metadata": {
+    "tier": "operator"
+  },
+  "keywords": [
+    "real estate",
+    "investing",
+    "underwriting",
+    "crm",
+    "pipeline",
+    "automation"
+  ]
+}
