@@ -1,6 +1,9 @@
 {
   "name": "zoxiro",
-  "owner": { "name": "Rae Allen", "email": "rae@zoxiro.com" },
+  "owner": {
+    "name": "Rae Allen",
+    "email": "rae@zoxiro.com"
+  },
   "metadata": {
     "description": "Zoxiro — The Operating Platform for Real Estate Investors. Private beta marketplace: install the tier you were given.",
     "version": "1.0.0"
@@ -11,18 +14,18 @@
       "source": "./plugins/zoxiro-operator",
       "version": "1.14.47",
       "description": "(build 1.14.47) Zoxiro Operator — investor tier. Deal Sourcing, institutional 9-step Underwriting with Excel models, and a self-auditing health check on top of the Core back office.",
-      "author": { "name": "Rae Allen" },
+      "author": {
+        "name": "Rae Allen"
+      },
       "category": "real-estate",
-      "keywords": ["real estate", "investing", "underwriting", "crm", "pipeline", "automation"]
-    },
-    {
-      "name": "zoxiro-core",
-      "source": "./plugins/zoxiro-core",
-      "version": "1.13.27",
-      "description": "(build 1.13.27) Zoxiro Core — wholesaler tier. Daily inbox review, deal-flow scan, pipeline and the self-auditing health check.",
-      "author": { "name": "Rae Allen" },
-      "category": "real-estate",
-      "keywords": ["real estate", "wholesaling", "crm", "pipeline", "automation"]
+      "keywords": [
+        "real estate",
+        "investing",
+        "underwriting",
+        "crm",
+        "pipeline",
+        "automation"
+      ]
     }
   ]
 }
